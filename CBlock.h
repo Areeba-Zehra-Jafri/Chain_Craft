@@ -4,6 +4,14 @@
 #include <string>
 #include <cstdint>   // Include for fixed-width integer types
 #include <ctime>     // Include for time_t
+#include <openssl/ssl.h>        // SSL/TLS functions
+#include <openssl/err.h>        // Error handling
+#include <openssl/sha.h>        // SHA hashing functions
+#include <openssl/rsa.h>        // RSA encryption functions
+#include <openssl/pem.h>        // PEM (Privacy Enhanced Mail) functions for reading/writing keys
+#include <openssl/x509.h>       // X.509 certificate handling
+#include <openssl/hmac.h>       // HMAC (Hash-based Message Authentication Code) functions
+
 
 namespace blockchain
 {

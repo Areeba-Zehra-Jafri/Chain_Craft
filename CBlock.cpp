@@ -2,6 +2,14 @@
 #include <cstring>  // Include for memcpy if you use it
 #include <iostream> // Include for debugging output (optional)
 #include <unistd.h>
+#include <openssl/ssl.h>        // SSL/TLS functions
+#include <openssl/err.h>        // Error handling
+#include <openssl/sha.h>        // SHA hashing functions
+#include <openssl/rsa.h>        // RSA encryption functions
+#include <openssl/pem.h>        // PEM (Privacy Enhanced Mail) functions for reading/writing keys
+#include <openssl/x509.h>       // X.509 certificate handling
+#include <openssl/hmac.h>       // HMAC (Hash-based Message Authentication Code) functions
+
 
 using namespace blockchain;
 
@@ -10,7 +18,7 @@ CBlock::CBlock(CBlock *prevBlock)
 {
     mpPrevBlock = prevBlock; // Set the pointer to the previous block
                              //    memeset(mHash,SHA256_DIGEST_LENGTH,0);
-    if(mPrevBlock)
+    if(mpPrevBlock)
     {
         memcpy(mPrevHash,mpPrevBlock->getHash(),SHA256_DIGEST_LENGTH);
     }
@@ -31,8 +39,8 @@ CBlock::CBlock(CBlock *prevBlock)
 void CBlock::calculateHash()
 {
     uint32_t sz = (SHA256_DIGEST_LENGTH * sizeof(uint8_t)) + sizeof(time_t) + mDataSize + sizeof(uint32_t);
-    uint8_t buf = new uint8_t[sz];
-    uint8_t ptr = buf;
+    uint8_t* buf = new uint8_t[sz];
+    uint8_t* ptr = buf;
 
     memcpy(ptr, mPrevHash, SHA256_DIGEST_LENGTH * sizeof(uint8_t));
     ptr += 20 * sizeof(uint8_t);
@@ -60,13 +68,13 @@ uint8_t *CBlock::getHash()
 std::string CBlock::getHashStr()
 {
     char buf[SHA256_DIGEST_LENGTH*2+1];
-    for(uint32_t n=0;n<SHA256_DIGEST_LENGTH,n++)
+    for(uint32_t n=0;n<SHA256_DIGEST_LENGTH;n++)
     {
         sprintf(buf + (n*2),"%02x",mHash[n]);
     }
     buf[SHA256_DIGEST_LENGTH*2]=0;
     return std::string(buf);
-    Implement logic to convert the hash to string
+   // Implement logic to convert the hash to string
     return ""; // Placeholder
 }
 
