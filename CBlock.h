@@ -11,8 +11,8 @@ namespace blockchain
     {
     private:
         // Uncomment these lines if you plan to implement hashing with OpenSSL
-        // uint8_t mHash[SHA256_DIGEST_LENGTH]; // Variable to store the block's hash
-        // uint8_t mPrevHash[SHA256_DIGEST_LENGTH]; // Variable to store the previous block's hash
+        uint8_t mHash[SHA256_DIGEST_LENGTH]; // Variable to store the block's hash
+        uint8_t mPrevHash[SHA256_DIGEST_LENGTH]; // Variable to store the previous block's hash
         CBlock* mpPrevBlock; // Pointer to the previous block
         uint8_t* mData; // Pointer to the data stored in the block
         uint32_t mDataSize; // Size of the data
