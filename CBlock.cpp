@@ -54,8 +54,7 @@ void CBlock::calculateHash()
 
 uint8_t *CBlock::getHash()
 {
-    //return mHash;
-    return nullptr; // Placeholder
+    return mHash;
 }
 
 std::string CBlock::getHashStr()
