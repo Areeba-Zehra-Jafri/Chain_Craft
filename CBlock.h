@@ -2,8 +2,9 @@
 #define CBLOCK_H
 
 #include <string>
+#include<vector>
 #include <cstdint>   // Include for fixed-width integer types
-#include <ctime>     // Include for time_t
+#include <ctime>    // Include for time_t
 #include <openssl/ssl.h>        // SSL/TLS functions
 #include <openssl/err.h>        // Error handling
 #include <openssl/sha.h>        // SHA hashing functions
@@ -11,7 +12,7 @@
 #include <openssl/pem.h>        // PEM (Privacy Enhanced Mail) functions for reading/writing keys
 #include <openssl/x509.h>       // X.509 certificate handling
 #include <openssl/hmac.h>       // HMAC (Hash-based Message Authentication Code) functions
-
+#include "Transaction.h"
 
 namespace blockchain
 {
@@ -26,6 +27,9 @@ namespace blockchain
         uint32_t mDataSize; // Size of the data
         time_t mCreatedTS; // Timestamp for when the block was created
         uint32_t mNonce; // Nonce value for mining
+        vector<Transaction> transactions; // Store transactions in the block
+
+    // Existing methods...
 
     public:
         // Constructor
@@ -54,6 +58,11 @@ namespace blockchain
 
         // Method to get the nonce value
         uint32_t getNonce();
+
+        //Method to  add transaction record
+        void addTransaction(const Transaction &tx);
+
+    
     };
 }
 

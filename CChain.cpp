@@ -27,7 +27,12 @@
 //     return mCurrentBlock;
 // }
 #include "CChain.h"
+#include "Transaction.h"
+#include "Proof_Of_Work.h"
+#include "CBlock.h"
 #include <iostream>
+
+class ProofOfWork;
 
 using namespace blockchain;
 
@@ -83,4 +88,10 @@ CBlock* CChain::getCurrentBlock()
 {
     // Return the block stored in the tail node
     return (mTail != nullptr) ? &mTail->block : nullptr;
+}
+
+void CChain::createTransaction(const std::string &sender, const std::string &recipient, double amount) {
+    Transaction tx(sender, recipient, amount);
+    tx.signTransaction(powobj); // Use the instance directly
+    mTail->block.addTransaction(tx); // Add the transaction to the current block
 }

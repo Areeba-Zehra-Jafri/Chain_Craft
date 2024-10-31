@@ -122,3 +122,7 @@ uint32_t CBlock::getNonce()
 {
     return mNonce; // Return the current nonce
 }
+
+void CBlock::addTransaction(const Transaction &tx) {
+    transactions.push_back(tx);
+}

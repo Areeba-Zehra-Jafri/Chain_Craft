@@ -47,10 +47,12 @@ namespace blockchain
         CChain(int difficulty);
         ~CChain(); // Destructor to free allocated memory
 
+        ProofOfWork powobj; 
         void appendToCurrentBlock(uint8_t* data, uint32_t size);
         void nextBlock();
+        void createTransaction(const string &sender, const string &recipient, double amount);
         CBlock* getCurrentBlock();
     };
 }
 
-#endif // CCHAIN_H
+#endif 
