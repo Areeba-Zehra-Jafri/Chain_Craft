@@ -25,6 +25,7 @@
 #ifndef CCHAIN_H
 #define CCHAIN_H
 
+#include "Proof_Of_Work.h"  // Add this line in CChain.h
 #include "CBlock.h"
 
 namespace blockchain
