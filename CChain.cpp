@@ -32,8 +32,6 @@
 #include "CBlock.h"
 #include <iostream>
 
-class ProofOfWork;
-
 using namespace blockchain;
 
 CChain::CChain(int difficulty) : mHead(nullptr), mTail(nullptr), mDifficulty(difficulty)
@@ -72,7 +70,7 @@ void CChain::nextBlock()
     if (mTail != nullptr)
     {
         // Create a new block with the current tail's block as the previous block
-        CBlock newBlock(&mTail->block);
+        CBlock newBlock(&mTail->block); // Pass the pointer to the current tail's block
         newBlock.mine(mDifficulty);
 
         // Create a new node and set it as the next node for the tail
@@ -92,6 +90,8 @@ CBlock* CChain::getCurrentBlock()
 
 void CChain::createTransaction(const std::string &sender, const std::string &recipient, double amount) {
     Transaction tx(sender, recipient, amount);
-    tx.signTransaction(powobj); // Use the instance directly
-    mTail->block.addTransaction(tx); // Add the transaction to the current block
+    tx.signTransaction(powobj); // Ensure powobj is defined and accessible
+    if (mTail != nullptr) {
+        mTail->block.addTransaction(tx); // Add the transaction to the current block
+    }
 }

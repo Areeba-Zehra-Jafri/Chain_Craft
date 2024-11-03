@@ -1,28 +1,32 @@
-// Transaction.h
-
 #ifndef TRANSACTION_H
 #define TRANSACTION_H
 
 #include <string>
-#include <openssl/rsa.h>
-#include <openssl/pem.h>
-#include <openssl/sha.h>
-
-using namespace std;
 
 class ProofOfWork; // Forward declaration
 
 class Transaction {
+private:
+    std::string sender;     // Transaction sender
+    std::string recipient;  // Transaction recipient
+    double amount;          // Transaction amount
+    std::string signature;  // Signature for the transaction
+
 public:
-    string sender;
-    string recipient;
-    double amount;
-    string signature;
+    // Constructor to initialize transaction details
+    Transaction(const std::string &sender, const std::string &recipient, double amount);
 
-    Transaction(const string &sender, const string &recipient, double amount);
+    // Sign the transaction using the ProofOfWork instance
+    void signTransaction( ProofOfWork &pow);
 
-    void signTransaction(ProofOfWork &pow);
-    bool isValid(ProofOfWork &pow) const;
+    // Verify the validity of the transaction
+    bool isValid( ProofOfWork &pow) const;
+
+    // Getters for member variables (optional)
+    const std::string& getSender() const { return sender; }
+    const std::string& getRecipient() const { return recipient; }
+    double getAmount() const { return amount; }
+    const std::string& getSignature() const { return signature; }
 };
 
 #endif // TRANSACTION_H

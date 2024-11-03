@@ -1,3 +1,29 @@
+// {
+//     "version": "2.0.0",
+//     "tasks": [
+//         {
+//             "label": "build",
+//             "type": "shell",
+//             "command": "g++",
+//             "args": [
+//                 "-g",
+//                 "${workspaceFolder}/your_main_file.cpp",  // Replace with your actual main C++ file
+//                 "-o",
+//                 "${workspaceFolder}/output.exe",   // Output file name
+//                 "-IE:/BlockChain Simulation/Chain_Craft/OpenSSL-Win64/include",  // OpenSSL include path
+//                 "-LE:/BlockChain Simulation/Chain_Craft/OpenSSL-Win64/lib",      // OpenSSL lib path
+//                 "-lssl",    // Link OpenSSL SSL library
+//                 "-lcrypto"  // Link OpenSSL crypto library
+//             ],
+//             "group": {
+//                 "kind": "build",
+//                 "isDefault": true
+//             },
+//             "problemMatcher": ["$gcc"],
+//             "detail": "Build C++ project with OpenSSL"
+//         }
+//     ]
+// }
 {
     "version": "2.0.0",
     "tasks": [
@@ -6,21 +32,26 @@
             "type": "shell",
             "command": "g++",
             "args": [
-                "-g",
-                "${workspaceFolder}/your_main_file.cpp",  // Replace with your actual main C++ file
                 "-o",
-                "${workspaceFolder}/output.exe",   // Output file name
-                "-IE:/BlockChain Simulation/Chain_Craft/OpenSSL-Win64/include",  // OpenSSL include path
-                "-LE:/BlockChain Simulation/Chain_Craft/OpenSSL-Win64/lib",      // OpenSSL lib path
-                "-lssl",    // Link OpenSSL SSL library
-                "-lcrypto"  // Link OpenSSL crypto library
+                "final",
+                "main.cpp",
+                "CChain.cpp",
+                "CBlock.cpp",
+                "Transaction.cpp",
+                "Proof_Of_Work.cpp",
+                "-I",
+                "C:/Program Files/OpenSSL-Win64/include",
+                "-L",
+                "C:/Program Files/OpenSSL-Win64/lib",
+                "-lssl",
+                "-lcrypto"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
             "problemMatcher": ["$gcc"],
-            "detail": "Build C++ project with OpenSSL"
+            "detail": "Generated task by gpp."
         }
     ]
 }
