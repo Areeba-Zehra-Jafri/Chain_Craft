@@ -1,42 +1,51 @@
-// #include <iostream>
-// #include "CChain.h"
-// #include "Transaction.h"
-// #include "Proof_Of_Work.h"
-
-// using namespace std;
-// using namespace blockchain;
-
-// int main() {
-//      Create a blockchain with a specific difficulty
-//     cout<<"Hello it compiled"<<endl;
-//     CChain blockchain(2);
-
-//     // Create a transaction
-//     string sender = "Alice";
-//     string recipient = "Bob";
-//     double amount = 10.0;
-
-//     // Create a ProofOfWork instance to sign the transaction
-//     ProofOfWork pow;
-
-//     // Create and sign the transaction
-//     blockchain.createTransaction(sender, recipient, amount);
-
-//     // Move to the next block after adding transactions
-//     blockchain.nextBlock();
-
-//     // Display the current block's transactions
-//     CBlock* currentBlock = blockchain.getCurrentBlock();
-//     if (currentBlock) {
-//         cout << "Current Block Transactions:" << endl;
-//         currentBlock->printTransactions();
-//     }
-
-//     return 0;
-// }
 #include <iostream>
+#include <vector>
+#include "CChain.h"
+#include "Wallet.h"
+
 int main() {
-    std::cout << "Program output test" << std::endl;
+    Blockchain myBlockchain;
+
+    Wallet alice("Alice");
+    Wallet bob("Bob");
+    Wallet charlie("Charlie");
+
+    // Initialize balances
+    alice.setBalance(100);
+    bob.setBalance(100);
+    charlie.setBalance(0);
+
+    // Create a vector to hold wallet pointers
+    std::vector<Wallet*> wallets = { &alice, &bob, &charlie };
+
+    // Create transactions
+    Transaction tx1 = alice.sendFunds(bob, 50);  
+    Transaction tx2 = bob.sendFunds(charlie, 30); 
+
+    // Add transactions to the blockchain
+    myBlockchain.createTransaction(tx1);
+    myBlockchain.createTransaction(tx2);
+
+    // Mine pending transactions to confirm them
+    myBlockchain.minePendingTransactions();
+
+    // Update each wallet’s balance based on the blockchain’s transactions
+    myBlockchain.notifyWallets(wallets);
+
+    // Validate blockchain integrity
+    if (myBlockchain.isChainValid()) {
+        std::cout << "Blockchain is valid.\n";
+    } else {
+        std::cout << "Blockchain is not valid!\n";
+    }
+
+    // Print the entire blockchain
+    myBlockchain.printChain();
+
+    // Print wallet balances
+    for (const auto& wallet : wallets) {
+        wallet->printWalletData();
+    }
+
     return 0;
 }
-

@@ -1,59 +1,40 @@
-// #ifndef CCHAIN_H
-// #define CCHAIN_H
-// #include "CBlock.h"
-// #include <vector>
-
-// namespace blockchain
-// {
-//     class CChain
-//     {
-//     private:
-//         std::vector<CBlock> mChain;
-//         CBlock* mCurrentBlock;
-//         int mDifficulty;
-//     public:
-//         CChain(int difficulty);
-//         void appendToCurrentBlock(uint8_t* data, uint32_t size);
-//         void nextBlock();
-//         CBlock* getCurrentBlock();
-
-//     };
-// }
-
-// #endif
-#ifndef CCHAIN_H
-#define CCHAIN_H
-
-#include "Proof_Of_Work.h"  // Ensure this header file is included
+#pragma once
+#include <vector>
+#include <unordered_map>
+#include <string>
 #include "CBlock.h"
-#include <string> // Include for std::string
+#include "Transaction.h"
+#include "Wallet.h"
+#include "RSA.h"  // Include custom RSA class header
 
-namespace blockchain
-{
-    class CChain
-    {
-    private:
-        struct Node
-        {
-            CBlock block;  // Block in the node
-            Node* next;    // Pointer to the next node
-            Node(CBlock blk) : block(blk), next(nullptr) {} // Node constructor
-        };
+class Blockchain {
+private:
+    std::vector<Block> chain;  // Blockchain consisting of blocks
+    std::vector<Transaction> pendingTransactions;  // Transactions waiting to be added to a block
+    std::unordered_map<std::string, RSA> publicKeyMap;  // Map of wallet IDs to their public keys
 
-        Node* mHead;      // Pointer to the first block in the chain
-        Node* mTail;      // Pointer to the last block in the chain
-        int mDifficulty;  // Difficulty level for mining
+public:
+    // Constructor to initialize blockchain with genesis block
+    Blockchain();
 
-    public:
-        CChain(int difficulty); // Constructor
-        ~CChain();              // Destructor to free allocated memory
+    // Method to add a new transaction to pendingTransactions
+    void createTransaction(Transaction transaction);
 
-        ProofOfWork powobj;     // Instance of ProofOfWork for transaction signing
-        void appendToCurrentBlock(uint8_t* data, uint32_t size); // Append data to the current block
-        void nextBlock();       // Create the next block in the chain
-        void createTransaction(const std::string &sender, const std::string &recipient, double amount); // Create and add a transaction
-        CBlock* getCurrentBlock(); // Get the current block
-    };
-}
+    // Method to mine pending transactions and add a new block to the blockchain
+    void minePendingTransactions();
 
-#endif // CCHAIN_H
+    // Method to validate if a block's hash is correct
+    bool isBlockHashValid(const Block& block);
+
+    // Method to validate if a transaction is valid
+    bool isTransactionValid(const Transaction& tx);
+
+    // Method to validate the integrity of the entire blockchain
+    bool isChainValid();
+
+    // Method to print the details of all blocks in the blockchain
+    void printChain();
+
+    // Method to notify all wallets about the state of the blockchain
+    void notifyWallets(std::vector<Wallet*>& wallets);
+};

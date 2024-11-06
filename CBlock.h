@@ -1,42 +1,29 @@
-// CBlock.h
-
-#ifndef CBLOCK_H
-#define CBLOCK_H
-
-#include <vector>
-#include <cstdint>
+#pragma once
 #include <string>
-#include <openssl/sha.h> // Include for SHA256_DIGEST_LENGTH
-#include "Transaction.h" // Make sure to include the Transaction class
+#include <vector>
+#include <ctime>
+#include "Transaction.h"
+#include "SHA256.h"  // Include our custom SHA-256 implementation
 
-namespace blockchain {
-
-class CBlock {
+class Block {
 public:
-    CBlock(CBlock* prevBlock);
-    void mine(int difficulty);
-    void appendData(uint8_t *data, uint32_t size);
-    uint8_t *getHash();
-    std::string getHashStr();
-    CBlock *getPrevBlock();
-    uint32_t getNonce();
-    void addTransaction(const Transaction &tx);
-    void printTransactions() const; // Declaration of the printTransactions method
+    std::string prevHash;        // Hash of the previous block
+    std::string blockHash;       // Hash of the current block
+    std::vector<Transaction> transactions; // List of transactions in this block
+    std::time_t timestamp;       // Timestamp for when this block was created
+    int nonce;                   // Nonce used for mining
+    int difficulty;              // The difficulty level for mining this block
+
+    // Constructor to initialize a block with transactions, previous hash, and difficulty
+    Block(std::vector<Transaction> transactions, std::string prevHash, int difficulty);
+
+    // Method to mine the block by finding a nonce that satisfies the difficulty
+    std::string mineBlock();
+
+    // Method to generate the hash of the block's contents
+    std::string generateHash() const;
 
 private:
-    uint8_t mPrevHash[SHA256_DIGEST_LENGTH]; // Previous block hash
-    uint8_t mHash[SHA256_DIGEST_LENGTH];      // Current block hash
-    time_t mCreatedTS;                         // Creation timestamp
-    uint32_t mNonce;                           // Nonce for mining
-    uint8_t *mData;                            // Data pointer
-    uint32_t mDataSize;                        // Size of the data
-    CBlock *mpPrevBlock;                       // Pointer to the previous block
-    std::vector<Transaction> transactions;     // Vector to hold transactions
-
-    void calculateHash();                       // Calculate the block hash
-    bool isDifficulty(int difficulty);          // Check difficulty
+    // Utility method to perform SHA-256 hashing using the custom SHA256 class
+    std::string sha256(const std::string& str) const;
 };
-
-} // namespace blockchain
-
-#endif // CBLOCK_H

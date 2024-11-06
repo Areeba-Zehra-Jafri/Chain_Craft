@@ -1,32 +1,81 @@
+// #ifndef TRANSACTION_H
+// #define TRANSACTION_H
+
+// #include <string>
+// #include "RSA.h"
+
+// class Transaction {
+// public:
+//     // Constructor
+//     Transaction(const std::string& sender, const std::string& receiver, double amount);
+
+//     // Get transaction data as a string
+//     std::string getTransactionData() const;
+
+//     // Calculate the SHA-256 hash of the transaction data
+//     std::string calculateHash() const;
+
+//     // Sign the transaction using RSA
+//     unsigned long long signTransaction(RSA& rsa);
+
+//     // Verify the transaction signature using RSA
+//     bool verifySignature( RSA& rsa, unsigned long long signature);
+
+//     // Getters for sender, receiver, and amount
+//     std::string get_sender() const;
+//     std::string get_receiver() const;
+//     double get_amount() const;
+
+//      bool isValid(const RSA& publicKey) const;
+
+// private:
+//     std::string sender;
+//     std::string receiver;
+//     double amount;
+//     std::string hash;
+// };
+
+// #endif // TRANSACTION_H
+
+
+
 #ifndef TRANSACTION_H
 #define TRANSACTION_H
 
 #include <string>
-
-class ProofOfWork; // Forward declaration
+#include "RSA.h"
 
 class Transaction {
-private:
-    std::string sender;     // Transaction sender
-    std::string recipient;  // Transaction recipient
-    double amount;          // Transaction amount
-    std::string signature;  // Signature for the transaction
-
 public:
-    // Constructor to initialize transaction details
-    Transaction(const std::string &sender, const std::string &recipient, double amount);
+    // Constructor to initialize a Transaction
+    Transaction(const std::string& sender, const std::string& receiver, double amount);
 
-    // Sign the transaction using the ProofOfWork instance
-    void signTransaction( ProofOfWork &pow);
+    // Method to get the transaction data as a string
+    std::string getTransactionData() const;
 
-    // Verify the validity of the transaction
-    bool isValid( ProofOfWork &pow) const;
+    // Method to calculate the hash of the transaction data
+    std::string calculateHash() const;
 
-    // Getters for member variables (optional)
-    const std::string& getSender() const { return sender; }
-    const std::string& getRecipient() const { return recipient; }
-    double getAmount() const { return amount; }
-    const std::string& getSignature() const { return signature; }
+    // Method to sign the transaction with RSA
+    unsigned long long signTransaction(RSA& rsa);
+
+    // Method to verify the transaction signature with RSA
+    bool verifySignature(RSA& rsa, unsigned long long signature);
+
+    // New method to check if the transaction is valid
+    bool isValid(RSA& publicKey) ;  // To be implemented
+
+    // Getters for sender, receiver, and amount
+    std::string get_sender() const;
+    std::string get_receiver() const;
+    double get_amount() const;
+
+private:
+    std::string sender;
+    std::string receiver;
+    double amount;
+    unsigned long long signature; // The signature for the transaction
+    std::string hash;  // The hash of the transaction data
 };
 
-#endif // TRANSACTION_H
+#endif
