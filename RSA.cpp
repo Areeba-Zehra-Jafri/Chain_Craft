@@ -5,7 +5,7 @@
 #include <chrono> 
 
 RSA::RSA() {
-    generateKeys();
+   /// generateKeys();
 }
 
 bool RSA::isPrime(unsigned long long num) {
