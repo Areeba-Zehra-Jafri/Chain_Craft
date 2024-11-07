@@ -1,9 +1,17 @@
+#include "CChain.h"
+#include "CBlock.h"
+#include "Transaction.h"
+#include "Wallet.h"
+#include "RSA.h"
 #include <iostream>
 #include <vector>
-#include "CChain.h"
-#include "Wallet.h"
+#include <string>
+using namespace std;
 
-int main() {
+int main()
+{
+
+    cout << "Hello World: " << endl;
     Blockchain myBlockchain;
 
     Wallet alice("Alice");
@@ -16,11 +24,11 @@ int main() {
     charlie.setBalance(0);
 
     // Create a vector to hold wallet pointers
-    std::vector<Wallet*> wallets = { &alice, &bob, &charlie };
+    std::vector<Wallet *> wallets = {&alice, &bob, &charlie};
 
     // Create transactions
-    Transaction tx1 = alice.sendFunds(bob, 50);  
-    Transaction tx2 = bob.sendFunds(charlie, 30); 
+    Transaction tx1 = alice.sendFunds(bob, 50);
+    Transaction tx2 = bob.sendFunds(charlie, 30);
 
     // Add transactions to the blockchain
     myBlockchain.createTransaction(tx1);
@@ -33,9 +41,12 @@ int main() {
     myBlockchain.notifyWallets(wallets);
 
     // Validate blockchain integrity
-    if (myBlockchain.isChainValid()) {
+    if (myBlockchain.isChainValid())
+    {
         std::cout << "Blockchain is valid.\n";
-    } else {
+    }
+    else
+    {
         std::cout << "Blockchain is not valid!\n";
     }
 
@@ -43,9 +54,9 @@ int main() {
     myBlockchain.printChain();
 
     // Print wallet balances
-    for (const auto& wallet : wallets) {
+    /*for (const auto& wallet : wallets) {
         wallet->printWalletData();
-    }
+    }*/
 
     return 0;
 }

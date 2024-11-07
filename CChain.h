@@ -1,40 +1,55 @@
-#pragma once
-#include <vector>
-#include <unordered_map>
-#include <string>
+#ifndef CCHAIN_H
+#define CCHAIN_H
+
 #include "CBlock.h"
 #include "Transaction.h"
-#include "Wallet.h"
-#include "RSA.h"  // Include custom RSA class header
+#include "wallet.h"
+#include <vector>
+#include <map>
 
 class Blockchain {
 private:
-    std::vector<Block> chain;  // Blockchain consisting of blocks
-    std::vector<Transaction> pendingTransactions;  // Transactions waiting to be added to a block
-    std::unordered_map<std::string, RSA> publicKeyMap;  // Map of wallet IDs to their public keys
+    Block* genesisBlock;           // Pointer to the genesis block
+    Block* latestBlock;            // Pointer to the latest block
+    std::vector<Block> chain;      // Vector to store the entire blockchain
+    std::vector<Transaction> pendingTransactions; // List of pending transactions
+    std::map<std::string, RSA> publicKeyMap;  // Map to store public keys by wallet ID
 
 public:
-    // Constructor to initialize blockchain with genesis block
-    Blockchain();
+    Blockchain();  // Constructor
 
-    // Method to add a new transaction to pendingTransactions
+    // Create a transaction and add it to the list of pending transactions
     void createTransaction(Transaction transaction);
 
-    // Method to mine pending transactions and add a new block to the blockchain
+    // Mine pending transactions into a new block and add it to the blockchain
     void minePendingTransactions();
 
-    // Method to validate if a block's hash is correct
-    bool isBlockHashValid(const Block& block);
-
-    // Method to validate if a transaction is valid
-    bool isTransactionValid(const Transaction& tx);
-
-    // Method to validate the integrity of the entire blockchain
+    // Validate the integrity of the blockchain
     bool isChainValid();
 
-    // Method to print the details of all blocks in the blockchain
+    // Display the details of the entire blockchain
     void printChain();
 
-    // Method to notify all wallets about the state of the blockchain
+    // Check if a block's hash is valid
+    bool isBlockHashValid(const Block& block);
+
+    // Check if a transaction is valid
+    bool isTransactionValid(const Transaction& tx);
+
+    // Notify wallets with updated transactions and balances
     void notifyWallets(std::vector<Wallet*>& wallets);
+
+
+    Block* get_genesis()
+    {
+        return genesisBlock;
+    }
+
+    Block* getLatestBlock()
+    {
+        return latestBlock;
+    } 
+
 };
+
+#endif  // CCHAIN_H

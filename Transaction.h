@@ -60,7 +60,7 @@ public:
     unsigned long long signTransaction(RSA& rsa);
 
     // Method to verify the transaction signature with RSA
-    bool verifySignature(RSA& rsa, unsigned long long signature);
+    bool verifySignature(RSA& rsa)const;
 
     // New method to check if the transaction is valid
     bool isValid(RSA& publicKey) ;  // To be implemented
@@ -69,6 +69,9 @@ public:
     std::string get_sender() const;
     std::string get_receiver() const;
     double get_amount() const;
+    unsigned long long getSignature()const;
+
+
 
 private:
     std::string sender;
