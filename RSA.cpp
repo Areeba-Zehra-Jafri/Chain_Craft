@@ -2,6 +2,7 @@
 #include <random>
 #include <stdexcept>
 #include <iostream>
+#include <chrono> 
 
 RSA::RSA() {
     generateKeys();
@@ -50,21 +51,59 @@ unsigned long long RSA::modExp(unsigned long long base, unsigned long long exp, 
     return result;
 }
 
+// void RSA::generateKeys() {
+//     // Small prime numbers for p and q, use larger values in real-world applications
+//     p = 61;
+//     q = 53;
+//     n = p * q;
+//     phi = (p - 1) * (q - 1);
+
+//     // Choose e, a coprime of phi and 1 < e < phi
+//     e = 17;  // Common choice for e
+//     if (gcd(e, phi) != 1)
+//         throw std::runtime_error("e and phi are not coprime.");
+
+//     d = modInverse(e, phi);
+//     if (d == 0)
+//         throw std::runtime_error("Modular inverse calculation failed.");
+// }
 void RSA::generateKeys() {
-    // Small prime numbers for p and q, use larger values in real-world applications
-    p = 61;
-    q = 53;
+    // Use current time for seeding to ensure different primes each time the program runs
+    std::random_device rd;
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::mt19937 gen(seed);
+    std::uniform_int_distribution<unsigned long long> primeDist(1000, 5000);
+
+    // Generate two unique random primes for p and q
+    do {
+        p = primeDist(gen);
+    } while (!isPrime(p));
+
+    do {
+        q = primeDist(gen);
+    } while (!isPrime(q) || q == p);
+
     n = p * q;
     phi = (p - 1) * (q - 1);
 
-    // Choose e, a coprime of phi and 1 < e < phi
-    e = 17;  // Common choice for e
-    if (gcd(e, phi) != 1)
-        throw std::runtime_error("e and phi are not coprime.");
+    // Choose a suitable e that is coprime with phi and 1 < e < phi
+    std::uniform_int_distribution<unsigned long long> eDist(2, phi - 1);
+    do {
+        e = eDist(gen);
+    } while (gcd(e, phi) != 1);
 
+    // Calculate modular inverse of e to get d
     d = modInverse(e, phi);
-    if (d == 0)
+    if (d == 0) {
         throw std::runtime_error("Modular inverse calculation failed.");
+    }
+
+    // Print generated values for verification
+    std::cout << "Generated keys:\n";
+    std::cout << "p: " << p << ", q: " << q << "\n";
+    std::cout << "n (modulus): " << n << ", phi: " << phi << "\n";
+    std::cout << "e (public key exponent): " << e << "\n";
+    std::cout << "d (private key exponent): " << d << "\n";
 }
 
 std::pair<unsigned long long, unsigned long long> RSA::getPublicKey() const {
