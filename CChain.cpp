@@ -69,7 +69,7 @@ bool Blockchain::isChainValid() {
 
 // Display the details of the entire blockchain
 void Blockchain::printChain() {
-    Block* currentBlock = genesisBlock;  // Start from the genesis block
+    Block* currentBlock = latestBlock;  // Start from the genesis block
     std::cout << "Printing Blockchain...\n";
     while (currentBlock != nullptr) {
         std::cout << "Block Timestamp: " << currentBlock->timestamp << std::endl;
@@ -105,7 +105,7 @@ void Blockchain::notifyWallets(std::vector<Wallet*>& wallets) {
         publicKeyMap[wallet->getId()] = rsa;  // Store the RSA object with the wallet ID
 
         // Iterate through blocks and update wallet balances
-        Block* currentBlock = genesisBlock;  // Start from the genesis block
+        Block* currentBlock = latestBlock;  // Start from the genesis block
         while (currentBlock != nullptr) {
             wallet->updateBalance(currentBlock->transactions);
             currentBlock = currentBlock->prevhash ? currentBlock->prevhash : nullptr;  // Move to previous block
