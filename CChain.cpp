@@ -1,5 +1,6 @@
 #include "CChain.h"
 #include "Wallet.h"
+#include "sha256.h"
 #include <iostream>
 
 // Constructor to initialize a Blockchain with the Genesis Block
@@ -65,6 +66,41 @@ bool Blockchain::isChainValid() {
     return true;
 }
 
+// Calculate the Merkle Root of the entire blockchain
+std::string Blockchain::calculateBlockchainMerkleRoot() {
+    std::vector<std::string> blockHashes;
+
+    Block* currentBlock = latestBlock;
+    // Traverse through all blocks and collect their Merkle Root
+    while (currentBlock != nullptr) {
+        blockHashes.push_back(currentBlock->getMerkleRoot());
+        currentBlock = currentBlock->getPrevBlock();
+    }
+
+    // If no blocks are present, return an empty string
+    if (blockHashes.empty()) {
+        return "";
+    }
+
+    // Step 2: Build the Merkle Tree for block hashes
+    while (blockHashes.size() > 1) {
+        // If the number of elements is odd, duplicate the last element
+        if (blockHashes.size() % 2 != 0) {
+            blockHashes.push_back(blockHashes.back());
+        }
+
+        std::vector<std::string> newLevel;
+        for (size_t i = 0; i < blockHashes.size(); i += 2) {
+            std::string combinedHash = SHA256::hash(blockHashes[i] + blockHashes[i + 1]);
+            newLevel.push_back(combinedHash);
+        }
+        blockHashes = newLevel;
+    }
+
+    // The root of the Merkle Tree is the first element of the list
+    return blockHashes[0];
+}
+
 
 
 // Display the details of the entire blockchain
@@ -75,6 +111,9 @@ void Blockchain::printChain() {
         std::cout << "Block Timestamp: " << currentBlock->timestamp << std::endl;
         std::cout << "Previous Hash: " << (currentBlock->prevhash ? currentBlock->prevhash->blockHash : "None") << std::endl;
         std::cout << "Block Hash: " << currentBlock->blockHash << std::endl;
+        std::cout << "Merkle Root of block: " << currentBlock->getMerkleRoot() << std::endl;
+        std::cout << "Merkle Root of Blockchain: " << calculateBlockchainMerkleRoot() << std::endl;
+        //std::cout << "Merkle Root: " << currentBlock->merkleRoot << std::endl;
         std::cout << "Transactions:" << std::endl;
 
         for (const auto& tx : currentBlock->transactions) {

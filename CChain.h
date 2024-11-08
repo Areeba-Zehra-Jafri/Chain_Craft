@@ -39,6 +39,10 @@ public:
     // Notify wallets with updated transactions and balances
     void notifyWallets(std::vector<Wallet*>& wallets);
 
+  
+    std::string calculateBlockchainMerkleRoot(); // Method to calculate Merkle Root of the entire blockchain
+
+
 
     Block* get_genesis()
     {
