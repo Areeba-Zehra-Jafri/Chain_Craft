@@ -106,9 +106,8 @@ void Blockchain::notifyWallets(std::vector<Wallet*>& wallets) {
 
         // Iterate through blocks and update wallet balances
         Block* currentBlock = latestBlock;  // Start from the genesis block
-        while (currentBlock != nullptr) {
             wallet->updateBalance(currentBlock->transactions);
-            currentBlock = currentBlock->prevhash ? currentBlock->prevhash : nullptr;  // Move to previous block
-        }
+           // currentBlock = currentBlock->prevhash ? currentBlock->prevhash : nullptr;  // Move to previous block
+        
     }
 }

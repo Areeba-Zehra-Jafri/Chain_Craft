@@ -2,6 +2,7 @@
 #include <iostream>      // For std::cout
 #include "RSA.h"         // For the custom RSA class
 #include "Transaction.h" // For the Transaction class
+#include "CBlock.h"
 
 // Constructor to initialize a Wallet with a given ID
 Wallet::Wallet(const std::string &id) : id(id), balance(0.0f)
@@ -33,7 +34,7 @@ void Wallet::generateKeys()
 // Method to send funds to another wallet, signing the transaction with the private key
 Transaction Wallet::sendFunds(Wallet &receiver, float amount)
 {
-    if (getBalance() >= amount)
+    if (this->getBalance() >= amount)
     {
         // Generate a nonce (can be randomized or incremented as needed)
         int nonce = 12345; // Replace with a more dynamic method if desired
