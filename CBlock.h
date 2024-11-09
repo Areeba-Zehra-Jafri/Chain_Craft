@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <ctime>
+#include<chrono>
 #include "Transaction.h"
 #include "SHA256.h"  // Include our custom SHA-256 implementation
 
@@ -10,7 +11,9 @@ public:
     Block* prevhash;           // Pointer to the previous block (linked list)
     std::string blockHash;      // Hash of the current block
     std::vector<Transaction> transactions; // List of transactions in this block
-    std::time_t timestamp;      // Timestamp for when this block was created
+    //std::time_t timestamp;      // Timestamp for when this block was created
+    std::chrono::system_clock::time_point timestamp; // High-resolution timestamp
+
     int nonce;                  // Nonce used for mining
     int difficulty;             // The difficulty level for mining this block
     std::string merkleRoot; // Store the Merkle Root of the block

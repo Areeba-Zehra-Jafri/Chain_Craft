@@ -3,7 +3,8 @@
 #include "RSA.h"         // For the custom RSA class
 #include "Transaction.h" // For the Transaction class
 #include "CBlock.h"
-
+#include <chrono>
+#include<random>
 // Constructor to initialize a Wallet with a given ID
 Wallet::Wallet(const std::string &id) : id(id), balance(0.0f)
 {
@@ -37,7 +38,13 @@ Transaction Wallet::sendFunds(Wallet &receiver, float amount)
     if (this->getBalance() >= amount)
     {
         // Generate a nonce (can be randomized or incremented as needed)
-        int nonce = 12345; // Replace with a more dynamic method if desired
+        //int nonce = 12345; // Replace with a more dynamic method if desired
+
+         // Generate a dynamic nonce using a random number generator
+        std::random_device rd;  // Obtain a random number from hardware
+        std::mt19937 gen(rd()); // Seed the generator
+        std::uniform_int_distribution<> distr(10000, 99999); // Define the range
+        int nonce = distr(gen);
 
         // Create a transaction object with sender, receiver, amount, and nonce
         Transaction tx(id, receiver.getId(), amount);
@@ -80,8 +87,8 @@ void Wallet::printWalletData() const
 {
     std::cout << "Wallet ID: " << id << std::endl;
     std::cout << "Balance: " << balance << std::endl;
-    //std::cout << "Public Key: (" << publicKey.first << ", " << publicKey.second << ")" << std::endl;
-    // Note: Avoid logging sensitive private key information
+    // std::cout << "Public Key: (" << publicKey.first << ", " << publicKey.second << ")" << std::endl;
+    //  Note: Avoid logging sensitive private key information
 }
 
 // Getter for Wallet ID
