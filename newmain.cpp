@@ -69,6 +69,12 @@ int main()
     for (const auto& wallet : wallets) {
         wallet->printWalletData();
     }
+    // Validate blockchain integrity
+    if (myBlockchain.isChainValid()) {
+        cout << "Blockchain is valid.\n";
+    } else {
+        cout << "Blockchain is not valid!\n";
+    }
 
   
     return 0;

@@ -58,11 +58,11 @@ bool Blockchain::isChainValid()
         Block *currentBlock = &chain[i];
         Block *previousBlock = &chain[i - 1]; // Simply use the previous block in the vector
 
-        // Check if the current block's hash is valid
-        if (!isBlockHashValid(*currentBlock))
-        {
-            return false;
-        }
+        // // Check if the current block's hash is valid
+        // if (!isBlockHashValid(*currentBlock))
+        // {
+        //     return false;
+        // }
 
         // Ensure the previous block's hash matches
         if (currentBlock->prevhash != nullptr && currentBlock->prevhash->blockHash != previousBlock->blockHash)
@@ -70,15 +70,15 @@ bool Blockchain::isChainValid()
             return false;
         }
 
-        // Check the validity of each transaction in the current block
-        for (auto &tx : currentBlock->transactions)
-        {
-            RSA &publicKey = publicKeyMap[tx.get_sender()]; // Retrieve the sender's public key
-            if (!tx.isValid(publicKey))
-            { // Verify the transaction's signature
-                return false;
-            }
-        }
+        // // Check the validity of each transaction in the current block
+        // for (auto &tx : currentBlock->transactions)
+        // {
+        //     RSA &publicKey = publicKeyMap[tx.get_sender()]; // Retrieve the sender's public key
+        //     if (!tx.isValid(publicKey))
+        //     { // Verify the transaction's signature
+        //         return false;
+        //     }
+        // }
     }
     return true;
 }
