@@ -284,6 +284,70 @@ void Block::setPrevBlock(Block *prev)
 }
 
 // Calculate the Merkle Root of all transactions in the block
+//actual one
+// std::string Block::calculateMerkleRoot()
+// {
+//     if (transactions.empty())
+//     {
+//         return ""; // Return empty string if no transactions
+//     }
+
+//     std::vector<std::string> merkleTree;
+
+//     // Step 1: Add all transaction hashes to the list
+//     for (const auto &tx : transactions)
+//     {
+//         std::string txData = tx.get_sender() + tx.get_receiver() + std::to_string(tx.get_amount());
+//         merkleTree.push_back(sha256(txData)); // Hash each transaction
+//     }
+
+//     // Step 2: Build the Merkle Tree
+//     while (merkleTree.size() > 1)
+//     {
+//         // If the number of elements is odd, duplicate the last element
+//         if (merkleTree.size() % 2 != 0)
+//         {
+//             merkleTree.push_back(merkleTree.back());
+//         }
+
+//         std::vector<std::string> newLevel;
+//         // Combine each pair of adjacent hashes
+//         for (size_t i = 0; i < merkleTree.size(); i += 2)
+//         {
+//             std::string combinedHash = sha256(merkleTree[i] + merkleTree[i + 1]);
+//             newLevel.push_back(combinedHash);
+//         }
+//         merkleTree = newLevel; // Move to the next level of the tree
+//     }
+
+//     // Step 3: The root of the Merkle Tree is the first element of the list
+//     return merkleTree.empty() ? "" : merkleTree[0];
+// }
+
+// // Method to get the Merkle Root (compute if not already computed)
+// std::string Block::getMerkleRoot()
+// {
+//     if (merkleRoot.empty())
+//     {
+//         merkleRoot = calculateMerkleRoot();
+//     }
+//     return merkleRoot;
+// }
+
+
+////New one
+
+// Merkle Node structure to represent each node in the Merkle Tree
+struct MerkleNode
+{
+    std::string hash;
+    MerkleNode* left;
+    MerkleNode* right;
+
+    MerkleNode(const std::string& hash_value) : hash(hash_value), left(nullptr), right(nullptr) {}
+};
+
+// Calculate the Merkle Root of all transactions in the block
 std::string Block::calculateMerkleRoot()
 {
     if (transactions.empty())
@@ -291,36 +355,39 @@ std::string Block::calculateMerkleRoot()
         return ""; // Return empty string if no transactions
     }
 
-    std::vector<std::string> merkleTree;
+    // Step 1: Create leaf nodes for each transaction
+    std::vector<MerkleNode*> nodes;
 
-    // Step 1: Add all transaction hashes to the list
     for (const auto &tx : transactions)
     {
         std::string txData = tx.get_sender() + tx.get_receiver() + std::to_string(tx.get_amount());
-        merkleTree.push_back(sha256(txData)); // Hash each transaction
+        nodes.push_back(new MerkleNode(sha256(txData))); // Hash each transaction and create a node
     }
 
     // Step 2: Build the Merkle Tree
-    while (merkleTree.size() > 1)
+    while (nodes.size() > 1)
     {
-        // If the number of elements is odd, duplicate the last element
-        if (merkleTree.size() % 2 != 0)
+        std::vector<MerkleNode*> newLevel;
+        for (size_t i = 0; i < nodes.size(); i += 2)
         {
-            merkleTree.push_back(merkleTree.back());
-        }
+            // If there is an odd number of nodes, duplicate the last one
+            if (i + 1 >= nodes.size())
+            {
+                nodes.push_back(nodes[i]);
+            }
 
-        std::vector<std::string> newLevel;
-        // Combine each pair of adjacent hashes
-        for (size_t i = 0; i < merkleTree.size(); i += 2)
-        {
-            std::string combinedHash = sha256(merkleTree[i] + merkleTree[i + 1]);
-            newLevel.push_back(combinedHash);
+            // Combine each pair of adjacent hashes
+            std::string combinedHash = sha256(nodes[i]->hash + nodes[i + 1]->hash);
+            MerkleNode* parent = new MerkleNode(combinedHash);
+            parent->left = nodes[i];
+            parent->right = nodes[i + 1];
+            newLevel.push_back(parent);
         }
-        merkleTree = newLevel; // Move to the next level of the tree
+        nodes = newLevel; // Move to the next level of the tree
     }
 
-    // Step 3: The root of the Merkle Tree is the first element of the list
-    return merkleTree.empty() ? "" : merkleTree[0];
+    // Step 3: The root of the Merkle Tree is the only element left
+    return nodes.empty() ? "" : nodes[0]->hash;
 }
 
 // Method to get the Merkle Root (compute if not already computed)
@@ -332,3 +399,4 @@ std::string Block::getMerkleRoot()
     }
     return merkleRoot;
 }
+
