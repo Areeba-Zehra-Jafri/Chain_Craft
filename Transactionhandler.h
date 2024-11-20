@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "RSA.h"
+#include <iostream>
 #include "Transaction.h"
 
 class TransactionHandler {
