@@ -36,6 +36,7 @@ unsigned long long Transaction::signTransaction(RSA &rsa)
     return signature;
 }
 
+
 // Verify the transaction signature using RSA
 bool Transaction::verifySignature(RSA &rsa)const
 {
