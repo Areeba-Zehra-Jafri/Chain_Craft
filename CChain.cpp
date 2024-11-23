@@ -5,6 +5,8 @@
 #include <chrono>
 #include <ctime>
 #include<iomanip>
+#include<queue>
+#include<string>
 
 using namespace std;
 
@@ -17,25 +19,51 @@ Blockchain::Blockchain()
 }
 
 // Create a transaction and add it to the list of pending transactions
-void Blockchain::createTransaction(Transaction transaction)
-{
-    pendingTransactions.push_back(std::move(transaction));
+// void Blockchain::createTransaction(Transaction transaction)
+// {
+//     pendingTransactions.push_back(std::move(transaction));
+// }
+
+// Create a transaction and add it to the list of pending transactions
+void Blockchain::createTransaction(Transaction transaction) {
+    pendingTransactions.push(std::move(transaction)); // Add to the queue
 }
 
+
 // Mine pending transactions into a new block and add it to the blockchain
-void Blockchain::minePendingTransactions()
-{
+// void Blockchain::minePendingTransactions()
+// {
+//     // Check if there are pending transactions to mine
+//     if (pendingTransactions.empty())
+//     {
+//         std::cout << "No pending transactions to mine." << std::endl;
+//         return;
+//     }
+
+//     Block *newBlock = new Block(pendingTransactions, latestBlock, 2); // Create a new block with latestBlock as the previous block
+//     latestBlock = newBlock;                                           // Update the latest block to the newly mined block
+//     chain.push_back(*newBlock);                                       // Add the mined block to the chain (optional, if you want to keep both the linked list and vector)
+//     pendingTransactions.clear();                                      // Clear pending transactions
+// }
+
+void Blockchain::minePendingTransactions() {
     // Check if there are pending transactions to mine
-    if (pendingTransactions.empty())
-    {
+    if (pendingTransactions.empty()) {
         std::cout << "No pending transactions to mine." << std::endl;
         return;
     }
 
-    Block *newBlock = new Block(pendingTransactions, latestBlock, 2); // Create a new block with latestBlock as the previous block
-    latestBlock = newBlock;                                           // Update the latest block to the newly mined block
-    chain.push_back(*newBlock);                                       // Add the mined block to the chain (optional, if you want to keep both the linked list and vector)
-    pendingTransactions.clear();                                      // Clear pending transactions
+    // Collect transactions from the queue to create a block
+    std::vector<Transaction> transactionsForBlock;
+    while (!pendingTransactions.empty()) {
+        transactionsForBlock.push_back(pendingTransactions.front()); // Retrieve transaction
+        pendingTransactions.pop();                                   // Remove it from the queue
+    }
+
+    // Create a new block with latestBlock as the previous block
+    Block* newBlock = new Block(transactionsForBlock, latestBlock, 2);
+    latestBlock = newBlock;            // Update the latest block to the newly mined block
+    chain.push_back(*newBlock);        // Add the mined block to the chain (optional)
 }
 
 // Check if a block's hash is valid
