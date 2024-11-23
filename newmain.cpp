@@ -1,81 +1,105 @@
-#include "CChain.h"
-#include "CBlock.h"
-#include "Transaction.h"
-#include "Wallet.h"
-#include "RSA.h"
 #include <iostream>
-#include <vector>
+#include "Transaction.h" 
+#include "TransactionHandler.h"
+#include "MiningHandler.h"
+#include "wallet.h"
+#include "RSA.h"
+#include "login.h"  // Include the login functionality
 #include <string>
-using namespace std;
+#include <thread>
+#include <chrono>
 
-int main()
-{
-    cout << "Hello Blockchain Simulation: " << endl;
-    Blockchain myBlockchain;
+int main() {
+    // Create RSA instance for signing and verifying transactions
+    RSA rsa;
+    rsa.generateKeys(); // Generate RSA keys for the user
 
-    // Create wallets
-    Wallet alice("Alice");
-    Wallet bob("Bob");
-    Wallet charlie("Charlie");
+    // Create a Login instance
+    Login loginSystem;
+    std::string username, password;
+    int choice;
 
-    // Initialize balances
-    alice.setBalance(100);
-    bob.setBalance(0);
-    charlie.setBalance(0);
+    // Login or Register loop
+    bool loggedIn = false;
+    while (!loggedIn) {
+        std::cout << "Welcome to the Blockchain System!\n";
+        std::cout << "Please choose an option:\n";
+        std::cout << "1. Register\n";
+        std::cout << "2. Login\n";
+        std::cout << "Enter choice: ";
+        std::cin >> choice;
 
-    // Create a vector to hold wallet pointers
-    vector<Wallet *> wallets = {&alice, &bob, &charlie};
+        std::cin.ignore();  // Clear the input buffer before getting strings
 
-    // First set of transactions
-    cout << "\n--- First Set of Transactions ---\n";
-    Transaction tx1 = alice.sendFunds(bob, 50);
-    Transaction tx2 = alice.sendFunds(charlie, 50);
-    
-    // Add transactions to blockchain and mine them in a new block
-    myBlockchain.createTransaction(tx1);
-    myBlockchain.createTransaction(tx2);
-    myBlockchain.minePendingTransactions();
+        std::cout << "Enter username: ";
+        std::cin >> username;
+        
+        // Get hidden password input
+        password = loginSystem.getHiddenPassword();
 
-    // Update wallet balances after first mining
-    myBlockchain.notifyWallets(wallets);
-
-    // Print blockchain and wallet balances
-    myBlockchain.printChain();
-    cout << "Wallet Balances after First Mining:\n";
-    for (const auto& wallet : wallets) {
-        wallet->printWalletData();
+        if (choice == 1) {
+            // Register the user
+            if (loginSystem.registerUser(username, password)) {
+                std::cout << "Registration successful!\n";
+                loggedIn = true;  // Automatically log in after registration
+            } else {
+                std::cout << "Registration failed. Username might already exist.\n";
+            }
+        } else if (choice == 2) {
+            // Attempt login
+            loggedIn = loginSystem.loginUser(username, password);
+            if (!loggedIn) {
+                std::cout << "Login failed! Please try again.\n";
+            }
+        } else {
+            std::cout << "Invalid option. Please try again.\n";
+        }
     }
 
-    cout<<endl;
-    
-    // Second set of transactions
-    cout << "\n--- Second Set of Transactions ---\n";
-    Transaction tx3 = charlie.sendFunds(alice, 20);  // Charlie sends to Alice
-    Transaction tx4 = bob.sendFunds(alice, 10);      // Bob sends to Alice
-    //Transaction tx5 = alice.sendFunds(bob, 15);      // Alice sends to Bob
+    // Once logged in, show options
+    int option;
+    std::cout << "\nLogin successful! \n Choose an option:\n";
+    std::cout << "1. Perform a Transaction\n";
+    std::cout << "2. Start Mining\n";
+    std::cout << "0. Exit\n";
+    std::cout << "Enter choice: ";
+    std::cin >> option;
 
-    // Add transactions and mine them in a new block
-    myBlockchain.createTransaction(tx3);
-    myBlockchain.createTransaction(tx4);
-    //myBlockchain.createTransaction(tx5);
-    myBlockchain.minePendingTransactions();
+    if (option == 1) {
+        // Perform a transaction
+        std::string sender, receiver;
+        double amount;
 
-    // Update wallet balances after second mining
-    myBlockchain.notifyWallets(wallets);
+        std::cout << "Enter your username (Sender): ";
+        std::cin >> sender;
+        std::cout << "Enter the recipient's username (Receiver): ";
+        std::cin >> receiver;
+        std::cout << "Enter the amount to send: ";
+        std::cin >> amount;
 
-    // Print blockchain and wallet balances
-    myBlockchain.printChain();
-    cout << "Wallet Balances after Second Mining:\n";
-    for (const auto& wallet : wallets) {
-        wallet->printWalletData();
-    }
-    // Validate blockchain integrity
-    if (myBlockchain.isChainValid()) {
-        cout << "Blockchain is valid.\n";
+        // Create a transaction and sign it
+        Transaction tx = TransactionHandler::createTransaction(sender, receiver, amount, rsa);
+        TransactionHandler::displayTransactionDetails(tx);
+
+        // Verify the transaction signature
+        if (TransactionHandler::verifyTransaction(tx, rsa)) {
+            std::cout << "Transaction Verified!\n";
+        } else {
+            std::cout << "Transaction verification failed.\n";
+        }
+    } else if (option == 2) {
+        // Start mining
+        std::string minerId;
+        std::cout << "Enter your miner ID: ";
+        std::cin >> minerId;
+
+        bool success = MiningHandler::mineBlock(minerId);
+        MiningHandler::displayMiningResult(minerId, success);
+    } else if (option == 0) {
+        std::cout << "Exiting the system...\n";
     } else {
-        cout << "Blockchain is not valid!\n";
+        std::cout << "Invalid option. Please try again.\n";
     }
 
-  
     return 0;
 }
