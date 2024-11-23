@@ -21,6 +21,9 @@ public:
     // Constructor to initialize a block with transactions, previous block pointer, and difficulty
     Block(std::vector<Transaction> transactions, Block* prevBlock, int difficulty);
 
+    Block(const std::vector<Transaction>& transactions, Block* prevBlock, int nonce, 
+          const std::string& blockHash, const std::chrono::system_clock::time_point& timestamp);
+
     // Method to mine the block by finding a nonce that satisfies the difficulty
     std::string mineBlock();
 
