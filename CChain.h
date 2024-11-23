@@ -43,8 +43,8 @@ public:
   
     std::string calculateBlockchainMerkleRoot(); // Method to calculate Merkle Root of the entire blockchain
 
-    void saveToFile(const std::string &filename);
-    void loadFromFile(const std::string &filename);
+    bool saveToFile(const std::string &filename) const;
+    bool loadFromFile(const std::string &filename);
 
     Block* get_genesis()
     {

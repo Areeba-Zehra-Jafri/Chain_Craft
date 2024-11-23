@@ -134,11 +134,19 @@ Wallet* Login::login() {
 
 // Function to handle transactions
 void Login::performTransaction(Wallet* sender) {
+
+      sender->setBalance(40);
+
     string receiverName;
     float amount;
 
     cout << "Enter Receiver's Username: ";
     cin >> receiverName;
+
+if (users.find(receiverName) == users.end()) {
+        cout << "Error: Receiver not found! Make sure the receiver has signed up.\n";
+        return;
+    }
 
     // Check if receiver exists
     Wallet* receiver = nullptr;
@@ -150,8 +158,8 @@ void Login::performTransaction(Wallet* sender) {
     }
 
     if (!receiver) {
-        cout << "Error: Receiver not found!\n";
-        return;
+        receiver = new Wallet(receiverName);
+        wallets.push_back(receiver); // Add temporary wallet to wallets
     }
 
     cout << "Enter Amount to Send: ";
@@ -162,12 +170,22 @@ void Login::performTransaction(Wallet* sender) {
         return;
     }
 
+    if (sender->getBalance() < amount) {
+        cout << "Error: Insufficient balance.\n";
+        return;
+    }
+
+
     // Create and add transaction
     Transaction tx = sender->sendFunds(*receiver, amount);
     if (tx.get_sender().empty()) {
         cout << "Transaction failed due to insufficient balance.\n";
         return;
     }
+
+     sender->setBalance(sender->getBalance() - amount);   // Deduct the amount from sender's balance
+    receiver->setBalance(receiver->getBalance() + amount); // Add the amount to receiver's balance
+
     myBlockchain.createTransaction(tx);
     cout << "Transaction successfully added to the blockchain queue.\n";
 }
