@@ -6,17 +6,20 @@
 #include "wallet.h"
 #include <vector>
 #include <map>
+#include <queue>
 
-class Blockchain {
+class Blockchain
+{
 private:
-    Block* genesisBlock;           // Pointer to the genesis block
-    Block* latestBlock;            // Pointer to the latest block
-    std::vector<Block> chain;      // Vector to store the entire blockchain
-    std::vector<Transaction> pendingTransactions; // List of pending transactions
-    std::map<std::string, RSA> publicKeyMap;  // Map to store public keys by wallet ID
+    Block *genesisBlock;                         // Pointer to the genesis block
+    Block *latestBlock;                          // Pointer to the latest block
+    std::vector<Block> chain;                    // Vector to store the entire blockchain
+    std::queue<Transaction> pendingTransactions; // Queue for pending transactions
+//    std::vector<Transaction> pendingTransactions; // List of pending transactions
+    std::map<std::string, RSA> publicKeyMap;      // Map to store public keys by wallet ID
 
 public:
-    Blockchain();  // Constructor
+    Blockchain(); // Constructor
 
     // Create a transaction and add it to the list of pending transactions
     void createTransaction(Transaction transaction);
@@ -31,29 +34,25 @@ public:
     void printChain();
 
     // Check if a block's hash is valid
-    bool isBlockHashValid(const Block& block);
+    bool isBlockHashValid(const Block &block);
 
     // Check if a transaction is valid
-    bool isTransactionValid(const Transaction& tx);
+    bool isTransactionValid(const Transaction &tx);
 
     // Notify wallets with updated transactions and balances
-    void notifyWallets(std::vector<Wallet*>& wallets);
+    void notifyWallets(std::vector<Wallet *> &wallets);
 
-  
     std::string calculateBlockchainMerkleRoot(); // Method to calculate Merkle Root of the entire blockchain
 
-
-
-    Block* get_genesis()
+    Block *get_genesis()
     {
         return genesisBlock;
     }
 
-    Block* getLatestBlock()
+    Block *getLatestBlock()
     {
         return latestBlock;
-    } 
-
+    }
 };
 
-#endif  // CCHAIN_H
+#endif // CCHAIN_H
