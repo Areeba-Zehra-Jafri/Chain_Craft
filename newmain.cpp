@@ -92,16 +92,13 @@
 using namespace std;
 
 int main() {
-<<<<<<< HEAD
     // Display login system and allow user to access the blockchain simulation
     Login loginSystem("users.txt"); // Initialize login system with file name
     loginSystem.displayMenu();      // Display the main menu
 
     // Blockchain simulation after user login
     cout << "\n--- Blockchain Simulation ---\n";
-=======
     cout << "Welcome to Blockchain Simulation!" << endl;
->>>>>>> ed4ecc8005c547129dc4d53ba8f4fec24ddb1cac
     Blockchain myBlockchain;
 
     // File for storing the blockchain
@@ -156,13 +153,8 @@ int main() {
 
     // Second set of transactions
     cout << "\n--- Second Set of Transactions ---\n";
-<<<<<<< HEAD
     Transaction tx3 = charlie.sendFunds(alice, 20); // Charlie sends to Alice
     Transaction tx4 = bob.sendFunds(alice, 10);     // Bob sends to Alice
-=======
-    Transaction tx3 = charlie.sendFunds(alice, 20);  // Charlie sends to Alice
-    Transaction tx4 = bob.sendFunds(alice, 10);      // Bob sends to Alice
->>>>>>> ed4ecc8005c547129dc4d53ba8f4fec24ddb1cac
 
     // Add transactions and mine them in a new block
     myBlockchain.createTransaction(tx3);
@@ -186,12 +178,9 @@ int main() {
         cout << "Blockchain is not valid!\n";
     }
 
-<<<<<<< HEAD
-=======
     // Save blockchain to file
     cout << "\n--- Save Blockchain to File ---\n";
     myBlockchain.saveToFile(blockchainFile);
 
->>>>>>> ed4ecc8005c547129dc4d53ba8f4fec24ddb1cac
     return 0;
 }
