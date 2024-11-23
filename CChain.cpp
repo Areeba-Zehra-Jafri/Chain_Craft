@@ -36,9 +36,6 @@ void Blockchain::minePendingTransactions()
         std::cout << "No pending transactions to mine." << std::endl;
         return;
     }
-
-    Block *newBlock = new Block(pendingTransactions, latestBlock, 2); // Create a new block with latestBlock as the previous block
-    
     // Collect transactions from the queue to create a block
     std::vector<Transaction> transactionsForBlock;
     while (!pendingTransactions.empty()) {
@@ -215,111 +212,6 @@ void Blockchain::notifyWallets(std::vector<Wallet *> &wallets)
     }
 }
 
-// void Blockchain::saveToFile(const std::string &filename)
-// {
-//     std::ofstream outFile(filename, std::ios::binary | std::ios::trunc);
-//     if (!outFile.is_open())
-//     {
-//         throw std::runtime_error("Unable to open file for saving blockchain.");
-//     }
-
-//     Block *currentBlock = latestBlock;
-
-//     while (currentBlock != nullptr)
-//     {
-//         // Serialize each block
-//         outFile << currentBlock->blockHash << "\n"; // Block hash
-//         outFile << (currentBlock->prevhash ? currentBlock->prevhash->blockHash : "None") << "\n"; // Previous hash
-//         outFile << currentBlock->getMerkleRoot() << "\n"; // Merkle root
-//         outFile << currentBlock->nonce << "\n"; // Nonce
-//         outFile << std::chrono::system_clock::to_time_t(currentBlock->timestamp) << "\n"; // Timestamp
-
-//         // Serialize transactions
-//         outFile << currentBlock->transactions.size() << "\n"; // Number of transactions
-//         for (const auto &tx : currentBlock->transactions)
-//         {
-//             outFile << tx.get_sender() << "\n"; // Sender
-//             outFile << tx.get_receiver() << "\n"; // Receiver
-//             outFile << tx.get_amount() << "\n"; // Amount
-//         }
-
-//         // Move to the previous block
-//         currentBlock = currentBlock->prevhash;
-//     }
-
-//     outFile.close();
-//     std::cout << "Blockchain saved to file: " << filename << std::endl;
-// }
-// void Blockchain::loadFromFile(const std::string &filename)
-// {
-//     std::ifstream inFile(filename, std::ios::binary);
-//     if (!inFile.is_open())
-//     {
-//         throw std::runtime_error("Unable to open file for loading blockchain.");
-//     }
-
-//     std::vector<Block *> loadedBlocks;
-//     std::string line;
-
-//     while (std::getline(inFile, line))
-//     {
-//         std::string blockHash = line;
-
-//         std::getline(inFile, line);
-//         std::string prevHash = (line == "None") ? "" : line;
-
-//         std::getline(inFile, line);
-//         std::string merkleRoot = line;
-
-//         std::getline(inFile, line);
-//         int nonce = std::stoi(line);
-
-//         std::getline(inFile, line);
-//         std::time_t timestamp = std::stol(line);
-
-//         // Load transactions
-//         std::getline(inFile, line);
-//         size_t numTransactions = std::stoul(line);
-//         std::vector<Transaction> transactions;
-
-//         for (size_t i = 0; i < numTransactions; ++i)
-//         {
-//             std::getline(inFile, line);
-//             std::string sender = line;
-
-//             std::getline(inFile, line);
-//             std::string receiver = line;
-
-//             std::getline(inFile, line);
-//             double amount = std::stod(line);
-
-//             transactions.emplace_back(sender, receiver, amount);
-//         }
-
-//         // Reconstruct the block
-//         Block *prevBlock = !loadedBlocks.empty() ? loadedBlocks.back() : nullptr;
-//         Block *newBlock = new Block(transactions, prevBlock, nonce);
-//         newBlock->timestamp = std::chrono::system_clock::from_time_t(timestamp);
-//         newBlock->blockHash = blockHash; // Set the hash directly
-//         loadedBlocks.push_back(newBlock);
-//     }
-
-//     inFile.close();
-
-//     // Rebuild the blockchain from the loaded blocks
-//     if (!loadedBlocks.empty())
-//     {
-//         genesisBlock = loadedBlocks.back(); // Genesis block is the last in the file
-//         latestBlock = loadedBlocks.front(); // Latest block is the first in the file
-//         chain.clear(); // Clear the existing chain if needed
-//         for (auto block : loadedBlocks)
-//         {
-//             chain.push_back(*block); // Add blocks to the vector
-//         }
-//     }
-
-//     std::cout << "Blockchain loaded from file: " << filename << std::endl;
-// }
 void Blockchain::saveToFile(const std::string &filename)
 {
     std::ofstream outFile(filename, std::ios::binary | std::ios::trunc);
