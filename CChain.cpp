@@ -234,6 +234,10 @@ void Blockchain::printChain()
         // Move to the previous block in the chain
         currentBlock = currentBlock->prevhash ? currentBlock->prevhash : nullptr;
     }
+    if(isChainValid())
+        cout<<"BlockChain is Valid: "<<endl;
+    else 
+        cout<<"BlockChain is not valid: "<<endl;
 }
 
 
