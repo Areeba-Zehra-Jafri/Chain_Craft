@@ -5,11 +5,17 @@
 #include "CBlock.h"
 #include <chrono>
 #include<random>
+#include <fstream>
 // Constructor to initialize a Wallet with a given ID
 Wallet::Wallet(const std::string &id) : id(id), balance(0.0f)
 {
     generateKeys(); // Generate RSA keys upon wallet creation
 }
+
+Wallet::Wallet(const std::string &id, const std::pair<long long, long long> &pubKey,
+               const std::pair<long long, long long> &privKey, float initialBalance)
+    : id(id), publicKey(pubKey), privateKey(privKey), balance(initialBalance) {}
+    // No key generation here
 
 // Destructor
 Wallet::~Wallet()
@@ -105,4 +111,49 @@ float Wallet::getBalance() const
 void Wallet::setBalance(float newBalance)
 {
     balance = newBalance;
+}
+
+std::pair<unsigned long long, unsigned long long> Wallet::getPublicKey() const {
+    return publicKey;  // Assuming publicKey is a member variable of Wallet
+}
+// Save wallet data to binary file
+void Wallet::saveToFile(std::ofstream &outFile) const {
+    size_t idLength = id.size();
+    outFile.write(reinterpret_cast<const char*>(&idLength), sizeof(idLength));
+    outFile.write(id.c_str(), idLength);
+    
+    outFile.write(reinterpret_cast<const char*>(&publicKey.first), sizeof(publicKey.first));
+    outFile.write(reinterpret_cast<const char*>(&publicKey.second), sizeof(publicKey.second));
+    
+    outFile.write(reinterpret_cast<const char*>(&privateKey.first), sizeof(privateKey.first));
+    outFile.write(reinterpret_cast<const char*>(&privateKey.second), sizeof(privateKey.second));
+    
+    outFile.write(reinterpret_cast<const char*>(&balance), sizeof(balance));
+}
+
+// Static method to load wallet from binary file
+Wallet* Wallet::loadFromFile(std::ifstream &inFile) {
+    size_t idLength;
+    inFile.read(reinterpret_cast<char*>(&idLength), sizeof(idLength));
+    
+    char* idBuffer = new char[idLength + 1];
+    inFile.read(idBuffer, idLength);
+    idBuffer[idLength] = '\0';
+    
+    std::string id(idBuffer);
+    delete[] idBuffer;
+    
+    std::pair<long long, long long> pubKey, privKey;
+    inFile.read(reinterpret_cast<char*>(&pubKey.first), sizeof(pubKey.first));
+    inFile.read(reinterpret_cast<char*>(&pubKey.second), sizeof(pubKey.second));
+    
+    inFile.read(reinterpret_cast<char*>(&privKey.first), sizeof(privKey.first));
+    inFile.read(reinterpret_cast<char*>(&privKey.second), sizeof(privKey.second));
+    
+    float balance;
+    inFile.read(reinterpret_cast<char*>(&balance), sizeof(balance));
+    
+    return new Wallet(id, pubKey, privKey, balance);
+
+  
 }

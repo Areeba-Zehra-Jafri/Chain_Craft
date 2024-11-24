@@ -14,15 +14,14 @@ private:
     std::pair<unsigned long long, unsigned long long> privateKey; // Private key as a pair (d, n)
 
 public:
-    // Constructor
+     Wallet(const std::string &id);  // Constructor to generate new keys
 
-    const std::pair<unsigned long long, unsigned long long>& getPublicKey() const {
-        return publicKey;
-    }
+    Wallet(const std::string &id, const std::pair<long long, long long> &pubKey,
+           const std::pair<long long, long long> &privKey, float initialBalance);  // Constructor for login
+
 
     void setBalance(float newBalance);
     
-    Wallet(const std::string& id);
 
     // Destructor
     ~Wallet();
@@ -46,6 +45,13 @@ public:
     float getBalance() const;
 
     std::pair<unsigned long long, unsigned long long> convertSignatureToPair(const std::string& signature);
+
+     void saveToFile(std::ofstream &outFile) const;
+
+    // Static method to load a wallet from a binary file
+    static Wallet* loadFromFile(std::ifstream &inFile);
+     std::pair<unsigned long long, unsigned long long> getPublicKey() const;
+
 };
 
 #endif // WALLET_H

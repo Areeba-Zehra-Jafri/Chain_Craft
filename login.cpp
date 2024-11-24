@@ -105,6 +105,13 @@ void Login::signup() {
     file << username << " " << password << endl;
     file.close();
 
+
+    // Create a new wallet and save it to a binary file
+    Wallet* newWallet = new Wallet(username);
+    ofstream walletFile("wallets.dat", ios::binary | ios::app);
+    newWallet->saveToFile(walletFile);
+    walletFile.close();
+
     // Add to map
     users[username] = password;
 
@@ -123,8 +130,17 @@ Wallet* Login::login() {
 
     if (users.find(username) != users.end() && users[username] == password) {
         cout << "Login successful! Welcome, " << username << "!\n";
-        Wallet* userWallet = new Wallet(username); // Create wallet object
-        wallets.push_back(userWallet); // Add to wallet list
+        ifstream walletFile("wallets.dat", ios::binary);
+        Wallet* userWallet = nullptr;
+        while (walletFile) {
+            userWallet = Wallet::loadFromFile(walletFile);
+            if (userWallet && userWallet->getId() == username) {
+                break;
+            }
+            delete userWallet; // Delete the loaded wallet if it's not the correct one
+        }
+        walletFile.close();
+
         return userWallet;
     } else {
         cout << "Error: Invalid username or password.\n";
@@ -135,7 +151,7 @@ Wallet* Login::login() {
 // Function to handle transactions
 void Login::performTransaction(Wallet* sender) {
 
-      sender->setBalance(40);
+      sender->setBalance(80);
 
     string receiverName;
     float amount;

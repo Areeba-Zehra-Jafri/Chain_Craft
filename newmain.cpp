@@ -24,6 +24,11 @@ void loadBlockchain(Blockchain &myBlockchain, const string &blockchainFile) {
             cout << "Failed to load blockchain. Starting with a new blockchain.\n";
         }
     } 
+    else if (choice == 'n' || choice == 'N') {
+        cout << "Starting with a new blockchain.\n";
+    } else {
+        cout << "Invalid choice. Defaulting to a new blockchain.\n";
+    }
 }
 
 void saveBlockchain(const Blockchain &myBlockchain, const string &blockchainFile) {
@@ -46,12 +51,10 @@ int main() {
     cout << "Welcome to Blockchain Simulation!" << endl;
     Blockchain myBlockchain;
 
-    // File for storing the blockchain
-    const string blockchainFile = "blockchain_data.txt";
 
-    // Load blockchain at the start
+     const string blockchainFile = "blockchain_data.txt";
     loadBlockchain(myBlockchain, blockchainFile);
-
+    
     // Create wallets
     Wallet alice("Alice");
     Wallet bob("Bob");
