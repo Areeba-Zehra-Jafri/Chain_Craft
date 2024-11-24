@@ -56,6 +56,7 @@ public:
     //  std::pair<unsigned long long, unsigned long long> getPublicKey() const;
 
     std::vector<Wallet*> loadAllFromFile(const std::string& filename);
+    void saveAllToFile(const std::vector<Wallet*>& wallets, const std::string& filename);
 
 };
 

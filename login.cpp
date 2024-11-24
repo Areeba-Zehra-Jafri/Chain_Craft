@@ -309,6 +309,8 @@ void Login::displayMenu() {
         } else if (choice == 2) {
             signup();
         } else if (choice == 3) {
+            const string walletsFile = "wallets.dat";
+            userWallet->saveAllToFile(wallets,walletsFile);
             cout << "\n--- Save Blockchain to File ---\n";
             const string blockchainFile = "blockchain_data.dat";
             if (myBlockchain.saveToFile(blockchainFile)) {

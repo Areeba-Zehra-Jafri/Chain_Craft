@@ -193,3 +193,32 @@ std::vector<Wallet*> Wallet::loadAllFromFile(const std::string& filename) {
     inFile.close();
     return wallets;
 }
+// Static method to save all wallets from a vector to a binary file
+void Wallet::saveAllToFile(const std::vector<Wallet*>& wallets, const std::string& filename) {
+    std::ofstream outFile(filename, std::ios::binary);
+
+    if (!outFile.is_open()) {
+        throw std::runtime_error("Unable to open file for saving wallets.");
+    }
+
+    for (const Wallet* wallet : wallets) {
+        // Write wallet ID
+        size_t idLength = wallet->id.size();
+        outFile.write(reinterpret_cast<const char*>(&idLength), sizeof(idLength));
+        outFile.write(wallet->id.c_str(), idLength);
+
+        // Write public key
+        outFile.write(reinterpret_cast<const char*>(&wallet->publicKey.first), sizeof(wallet->publicKey.first));
+        outFile.write(reinterpret_cast<const char*>(&wallet->publicKey.second), sizeof(wallet->publicKey.second));
+
+        // Write private key
+        outFile.write(reinterpret_cast<const char*>(&wallet->privateKey.first), sizeof(wallet->privateKey.first));
+        outFile.write(reinterpret_cast<const char*>(&wallet->privateKey.second), sizeof(wallet->privateKey.second));
+
+        // Write balance
+        outFile.write(reinterpret_cast<const char*>(&wallet->balance), sizeof(wallet->balance));
+    }
+
+    outFile.close();
+    std::cout << "[DEBUG] All wallets saved to file successfully." << std::endl;
+}
