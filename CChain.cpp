@@ -48,6 +48,12 @@ void Blockchain::minePendingTransactions()
     Block* newBlock = new Block(transactionsForBlock, latestBlock, 2);
     latestBlock = newBlock;            // Update the latest block to the newly mined block
     chain.push_back(*newBlock);        // Add the mined block to the chain (optional)
+
+    std::cout << "[DEBUG] Mined new block: " << newBlock->blockHash << std::endl;
+
+    if (!saveToFile("blockchain.dat")) {
+        cerr << "[ERROR] Failed to save blockchain to file after mining.\n";
+    }
 }
 
 // Check if a block's hash is valid
@@ -394,7 +400,6 @@ void Blockchain::notifyWallets(std::vector<Wallet *> &wallets)
 //     cout << "[DEBUG] saveToFile completed successfully." << endl;
 //     return true;
 // }
-
 bool Blockchain::saveToFile(const string& filename) const {
     cout << "[DEBUG] Starting saveToFile function." << endl;
 
@@ -406,40 +411,39 @@ bool Blockchain::saveToFile(const string& filename) const {
     }
 
     try {
-        Block* currentBlock = latestBlock;
-        while (currentBlock != nullptr) {
+        for ( const auto& block : chain) {
             // Save block hash
-            size_t hashSize = currentBlock->blockHash.size();
+            size_t hashSize = block.blockHash.size();
             outFile.write(reinterpret_cast<const char*>(&hashSize), sizeof(hashSize));
-            outFile.write(currentBlock->blockHash.data(), hashSize);
+            outFile.write(block.blockHash.data(), hashSize);
 
             // Save previous hash
-            bool hasPrevHash = currentBlock->prevhash != nullptr;
+            bool hasPrevHash = block.prevhash != nullptr;
             outFile.write(reinterpret_cast<const char*>(&hasPrevHash), sizeof(hasPrevHash));
             if (hasPrevHash) {
-                size_t prevHashSize = currentBlock->prevhash->blockHash.size();
+                size_t prevHashSize = block.prevhash->blockHash.size();
                 outFile.write(reinterpret_cast<const char*>(&prevHashSize), sizeof(prevHashSize));
-                outFile.write(currentBlock->prevhash->blockHash.data(), prevHashSize);
+                outFile.write(block.prevhash->blockHash.data(), prevHashSize);
             }
 
             // Save Merkle root
-            string merkleRoot = currentBlock->getMerkleRoot();
+            string merkleRoot = const_cast<Block&>(block).getMerkleRoot();
             size_t merkleSize = merkleRoot.size();
             outFile.write(reinterpret_cast<const char*>(&merkleSize), sizeof(merkleSize));
             outFile.write(merkleRoot.data(), merkleSize);
 
             // Save nonce
-            outFile.write(reinterpret_cast<const char*>(&currentBlock->nonce), sizeof(currentBlock->nonce));
+            outFile.write(reinterpret_cast<const char*>(&block.nonce), sizeof(block.nonce));
 
             // Save timestamp
-            time_t timestamp = chrono::system_clock::to_time_t(currentBlock->timestamp);
+            time_t timestamp = chrono::system_clock::to_time_t(block.timestamp);
             outFile.write(reinterpret_cast<const char*>(&timestamp), sizeof(timestamp));
 
             // Save transactions
-            size_t txCount = currentBlock->transactions.size();
+            size_t txCount = block.transactions.size();
             outFile.write(reinterpret_cast<const char*>(&txCount), sizeof(txCount));
 
-            for (const auto& tx : currentBlock->transactions) {
+            for (const auto& tx : block.transactions) {
                 size_t senderSize = tx.get_sender().size();
                 outFile.write(reinterpret_cast<const char*>(&senderSize), sizeof(senderSize));
                 outFile.write(tx.get_sender().data(), senderSize);
@@ -451,10 +455,9 @@ bool Blockchain::saveToFile(const string& filename) const {
                 double amount = tx.get_amount();
                 outFile.write(reinterpret_cast<const char*>(&amount), sizeof(amount));
             }
-
-            currentBlock = currentBlock->prevhash;
         }
 
+        cout << "[DEBUG] Blockchain saved successfully to " << filename << endl;
     } catch (const exception& e) {
         cerr << "[ERROR] Exception during saveToFile: " << e.what() << endl;
         outFile.close();
@@ -462,9 +465,9 @@ bool Blockchain::saveToFile(const string& filename) const {
     }
 
     outFile.close();
-    cout << "[DEBUG] saveToFile completed successfully." << endl;
     return true;
 }
+
 
 
 // bool Blockchain::loadFromFile(const string& filename) {
@@ -579,97 +582,308 @@ bool Blockchain::saveToFile(const string& filename) const {
 
 //     cout << "[DEBUG] loadFromFile completed successfully." << endl;
 //     return true;
+// // // }
+// bool Blockchain::loadFromFile(const string& filename) {
+//     cout << "[DEBUG] Starting loadFromFile function." << endl;
+
+//     ifstream inFile(filename, ios::binary);
+//     if (!inFile.is_open()) {
+//         cerr << "[ERROR] Unable to open file for loading blockchain." << endl;
+//         return false;
+//     }
+
+//     try {
+//         chain.clear(); // Clear any existing blockchain data
+
+//         while (inFile.peek() != EOF) {
+//             // Load block hash
+//             size_t hashSize;
+//             inFile.read(reinterpret_cast<char*>(&hashSize), sizeof(hashSize));
+//             string blockHash(hashSize, '\0');
+//             inFile.read(&blockHash[0], hashSize);
+
+//             // Load previous hash
+//             bool hasPrevHash;
+//             inFile.read(reinterpret_cast<char*>(&hasPrevHash), sizeof(hasPrevHash));
+//             string prevHash;
+//             if (hasPrevHash) {
+//                 size_t prevHashSize;
+//                 inFile.read(reinterpret_cast<char*>(&prevHashSize), sizeof(prevHashSize));
+//                 prevHash.resize(prevHashSize);
+//                 inFile.read(&prevHash[0], prevHashSize);
+//             }
+
+//             // Load Merkle root
+//             size_t merkleSize;
+//             inFile.read(reinterpret_cast<char*>(&merkleSize), sizeof(merkleSize));
+//             string merkleRoot(merkleSize, '\0');
+//             inFile.read(&merkleRoot[0], merkleSize);
+
+//             // Load nonce
+//             int nonce;
+//             inFile.read(reinterpret_cast<char*>(&nonce), sizeof(nonce));
+
+//             // Load timestamp
+//             time_t timestamp;
+//             inFile.read(reinterpret_cast<char*>(&timestamp), sizeof(timestamp));
+//             auto blockTimestamp = chrono::system_clock::from_time_t(timestamp);
+
+//             // Load transactions
+//             size_t txCount;
+//             inFile.read(reinterpret_cast<char*>(&txCount), sizeof(txCount));
+
+//             vector<Transaction> transactions;
+//             for (size_t i = 0; i < txCount; ++i) {
+//                 // Load sender
+//                 size_t senderSize;
+//                 inFile.read(reinterpret_cast<char*>(&senderSize), sizeof(senderSize));
+//                 string sender(senderSize, '\0');
+//                 inFile.read(&sender[0], senderSize);
+
+//                 // Load receiver
+//                 size_t receiverSize;
+//                 inFile.read(reinterpret_cast<char*>(&receiverSize), sizeof(receiverSize));
+//                 string receiver(receiverSize, '\0');
+//                 inFile.read(&receiver[0], receiverSize);
+
+//                 // Load amount
+//                 double amount;
+//                 inFile.read(reinterpret_cast<char*>(&amount), sizeof(amount));
+
+//                 transactions.emplace_back(sender, receiver, amount);
+//             }
+
+//             // Reconstruct block
+//             Block block(transactions, nullptr, nonce, blockHash, blockTimestamp);
+
+//             // Link to the previous block if available
+//             if (!chain.empty()) {
+//                 block.prevhash = &chain.back();
+//             }
+
+//             chain.push_back(block);
+//         }
+
+//         // Update genesisBlock and latestBlock pointers
+//         if (!chain.empty()) {
+//             genesisBlock = &chain.front();
+//             latestBlock = &chain.back();
+//         }
+
+//         cout << "[DEBUG] Blockchain loaded successfully from " << filename << endl;
+//     } catch (const exception& e) {
+//         cerr << "[ERROR] Exception during loadFromFile: " << e.what() << endl;
+//         inFile.close();
+//         return false;
+//     }
+
+//     inFile.close();
+//     return true;
+// // }
+// bool Blockchain::loadFromFile(const string& filename) {
+//     cout << "[DEBUG] Starting loadFromFile function." << endl;
+
+//     // Open the file in binary mode
+//     ifstream inFile(filename, ios::binary);
+//     if (!inFile.is_open()) {
+//         cerr << "[ERROR] Unable to open file for loading blockchain." << endl;
+//         return false;
+//     }
+
+//     try {
+//         vector<Block*> loadedBlocks; // Temporary storage for blocks to restore links
+//         Block* prevBlock = nullptr;
+
+//         while (inFile.peek() != EOF) { // Read until the end of the file
+//             // Read block hash
+//             size_t hashSize;
+//             inFile.read(reinterpret_cast<char*>(&hashSize), sizeof(hashSize));
+//             string blockHash(hashSize, '\0');
+//             inFile.read(&blockHash[0], hashSize);
+
+//             // Read previous hash (if exists)
+//             bool hasPrevHash;
+//             inFile.read(reinterpret_cast<char*>(&hasPrevHash), sizeof(hasPrevHash));
+//             string prevBlockHash;
+//             if (hasPrevHash) {
+//                 size_t prevHashSize;
+//                 inFile.read(reinterpret_cast<char*>(&prevHashSize), sizeof(prevHashSize));
+//                 prevBlockHash.resize(prevHashSize);
+//                 inFile.read(&prevBlockHash[0], prevHashSize);
+//             }
+
+//             // Read Merkle root
+//             size_t merkleSize;
+//             inFile.read(reinterpret_cast<char*>(&merkleSize), sizeof(merkleSize));
+//             string merkleRoot(merkleSize, '\0');
+//             inFile.read(&merkleRoot[0], merkleSize);
+
+//             // Read nonce
+//             int nonce;
+//             inFile.read(reinterpret_cast<char*>(&nonce), sizeof(nonce));
+
+//             // Read timestamp
+//             time_t timestamp;
+//             inFile.read(reinterpret_cast<char*>(&timestamp), sizeof(timestamp));
+//             auto blockTime = chrono::system_clock::from_time_t(timestamp);
+
+//             // Read transactions
+//             size_t txCount;
+//             inFile.read(reinterpret_cast<char*>(&txCount), sizeof(txCount));
+//             vector<Transaction> transactions;
+
+//             for (size_t i = 0; i < txCount; ++i) {
+//                 size_t senderSize;
+//                 inFile.read(reinterpret_cast<char*>(&senderSize), sizeof(senderSize));
+//                 string sender(senderSize, '\0');
+//                 inFile.read(&sender[0], senderSize);
+
+//                 size_t receiverSize;
+//                 inFile.read(reinterpret_cast<char*>(&receiverSize), sizeof(receiverSize));
+//                 string receiver(receiverSize, '\0');
+//                 inFile.read(&receiver[0], receiverSize);
+
+//                 double amount;
+//                 inFile.read(reinterpret_cast<char*>(&amount), sizeof(amount));
+
+//                 transactions.emplace_back(sender, receiver, amount);
+//             }
+
+//             // Reconstruct the block
+//             Block* block = new Block(transactions, prevBlock, nonce, blockHash, blockTime);
+
+//             // Restore previous hash link
+//             block->prevhash = prevBlock;
+
+//             // Add to the list of loaded blocks
+//             loadedBlocks.push_back(block);
+
+//             // Update prevBlock for the next block
+//             prevBlock = block;
+//         }
+
+//         // Update latestBlock to the last block loaded
+//         if (!loadedBlocks.empty()) {
+//             latestBlock = loadedBlocks.back();
+//         } else {
+//             latestBlock = nullptr;
+//         }
+
+//         cout << "[DEBUG] loadFromFile completed successfully." << endl;
+//     } catch (const exception& e) {
+//         cerr << "[ERROR] Exception during loadFromFile: " << e.what() << endl;
+//         inFile.close();
+//         return false;
+//     }
+
+//     inFile.close();
+//     return true;
 // }
 bool Blockchain::loadFromFile(const string& filename) {
     cout << "[DEBUG] Starting loadFromFile function." << endl;
 
+    // Open the file in binary mode
     ifstream inFile(filename, ios::binary);
     if (!inFile.is_open()) {
         cerr << "[ERROR] Unable to open file for loading blockchain." << endl;
-        throw runtime_error("Unable to open file for loading blockchain.");
-    }
-
-    chain.clear(); // Clear the existing chain if any
-
-    while (true) {
-        cout << "[DEBUG] Reading block data." << endl;
-
-        // Read block hash
-        size_t hashSize;
-        if (!inFile.read(reinterpret_cast<char*>(&hashSize), sizeof(hashSize))) break;
-        string blockHash(hashSize, '\0');
-        inFile.read(&blockHash[0], hashSize);
-
-        // Read previous hash
-        bool hasPrevHash;
-        inFile.read(reinterpret_cast<char*>(&hasPrevHash), sizeof(hasPrevHash));
-        string prevHash;
-        if (hasPrevHash) {
-            size_t prevHashSize;
-            inFile.read(reinterpret_cast<char*>(&prevHashSize), sizeof(prevHashSize));
-            prevHash.resize(prevHashSize);
-            inFile.read(&prevHash[0], prevHashSize);
-        }
-
-        // Read Merkle root
-        size_t merkleSize;
-        inFile.read(reinterpret_cast<char*>(&merkleSize), sizeof(merkleSize));
-        string merkleRoot(merkleSize, '\0');
-        inFile.read(&merkleRoot[0], merkleSize);
-
-        // Read nonce
-        int nonce;
-        inFile.read(reinterpret_cast<char*>(&nonce), sizeof(nonce));
-
-        // Read timestamp
-        time_t timestamp;
-        inFile.read(reinterpret_cast<char*>(&timestamp), sizeof(timestamp));
-
-        // Read transactions
-        size_t txCount;
-        inFile.read(reinterpret_cast<char*>(&txCount), sizeof(txCount));
-        vector<Transaction> transactions;
-        for (size_t i = 0; i < txCount; ++i) {
-            size_t senderSize;
-            inFile.read(reinterpret_cast<char*>(&senderSize), sizeof(senderSize));
-            string sender(senderSize, '\0');
-            inFile.read(&sender[0], senderSize);
-
-            size_t receiverSize;
-            inFile.read(reinterpret_cast<char*>(&receiverSize), sizeof(receiverSize));
-            string receiver(receiverSize, '\0');
-            inFile.read(&receiver[0], receiverSize);
-
-            double amount;
-            inFile.read(reinterpret_cast<char*>(&amount), sizeof(amount));
-
-            transactions.emplace_back(sender, receiver, amount);
-        }
-
-        // Temporarily create a block without linking prevhash
-        Block tempBlock(transactions, nullptr, nonce, blockHash, chrono::system_clock::from_time_t(timestamp));
-        chain.push_back(tempBlock);
-    }
-
-    inFile.close();
-
-    // Rebuild links in the chain
-    if (!chain.empty()) {
-        cout << "[DEBUG] Rebuilding links between blocks." << endl;
-
-        genesisBlock = &chain.front(); // Genesis block is the first block
-        latestBlock = &chain.back();   // Latest block is the last block
-
-        for (size_t i = 1; i < chain.size(); ++i) {
-            chain[i].prevhash = &chain[i - 1]; // Set prevhash to the previous block
-        }
-
-        cout << "[DEBUG] Blockchain successfully rebuilt with " << chain.size() << " blocks." << endl;
-    } else {
-        cerr << "[ERROR] No blocks found in the file." << endl;
         return false;
     }
 
-    cout << "[DEBUG] loadFromFile completed successfully." << endl;
+    try {
+        vector<Block*> loadedBlocks; // Temporary storage for blocks
+        unordered_map<string, string> blockToPrevHash; // Map to track block and its previous hash
+        unordered_map<string, Block*> hashToBlock; // Map to associate hashes with blocks for linking
+        Block* lastBlock = nullptr;
+
+        while (inFile.peek() != EOF) { // Read until the end of the file
+            // Read block hash
+            size_t hashSize;
+            inFile.read(reinterpret_cast<char*>(&hashSize), sizeof(hashSize));
+            string blockHash(hashSize, '\0');
+            inFile.read(&blockHash[0], hashSize);
+
+            // Read previous hash (if exists)
+            bool hasPrevHash;
+            inFile.read(reinterpret_cast<char*>(&hasPrevHash), sizeof(hasPrevHash));
+            string prevBlockHash;
+            if (hasPrevHash) {
+                size_t prevHashSize;
+                inFile.read(reinterpret_cast<char*>(&prevHashSize), sizeof(prevHashSize));
+                prevBlockHash.resize(prevHashSize);
+                inFile.read(&prevBlockHash[0], prevHashSize);
+            }
+
+            // Read Merkle root
+            size_t merkleSize;
+            inFile.read(reinterpret_cast<char*>(&merkleSize), sizeof(merkleSize));
+            string merkleRoot(merkleSize, '\0');
+            inFile.read(&merkleRoot[0], merkleSize);
+
+            // Read nonce
+            int nonce;
+            inFile.read(reinterpret_cast<char*>(&nonce), sizeof(nonce));
+
+            // Read timestamp
+            time_t timestamp;
+            inFile.read(reinterpret_cast<char*>(&timestamp), sizeof(timestamp));
+            auto blockTime = chrono::system_clock::from_time_t(timestamp);
+
+            // Read transactions
+            size_t txCount;
+            inFile.read(reinterpret_cast<char*>(&txCount), sizeof(txCount));
+            vector<Transaction> transactions;
+
+            for (size_t i = 0; i < txCount; ++i) {
+                size_t senderSize;
+                inFile.read(reinterpret_cast<char*>(&senderSize), sizeof(senderSize));
+                string sender(senderSize, '\0');
+                inFile.read(&sender[0], senderSize);
+
+                size_t receiverSize;
+                inFile.read(reinterpret_cast<char*>(&receiverSize), sizeof(receiverSize));
+                string receiver(receiverSize, '\0');
+                inFile.read(&receiver[0], receiverSize);
+
+                double amount;
+                inFile.read(reinterpret_cast<char*>(&amount), sizeof(amount));
+
+                transactions.emplace_back(sender, receiver, amount);
+            }
+
+            // Create block
+            Block* block = new Block(transactions, nullptr, nonce, blockHash, blockTime);
+
+            // Track the block and its previous hash
+            if (!prevBlockHash.empty()) {
+                blockToPrevHash[blockHash] = prevBlockHash;
+            }
+
+            // Add block to map
+            hashToBlock[blockHash] = block;
+            loadedBlocks.push_back(block);
+        }
+
+        // Relink blocks using the hash map
+        for (const auto& [currentHash, prevHash] : blockToPrevHash) {
+            if (hashToBlock.find(prevHash) != hashToBlock.end()) {
+                hashToBlock[currentHash]->prevhash = hashToBlock[prevHash];
+            }
+        }
+
+        // Update latestBlock to the last block loaded
+        if (!loadedBlocks.empty()) {
+            latestBlock = loadedBlocks.back();
+        } else {
+            latestBlock = nullptr;
+        }
+
+        cout << "[DEBUG] loadFromFile completed successfully." << endl;
+    } catch (const exception& e) {
+        cerr << "[ERROR] Exception during loadFromFile: " << e.what() << endl;
+        inFile.close();
+        return false;
+    }
+
+    inFile.close();
     return true;
 }

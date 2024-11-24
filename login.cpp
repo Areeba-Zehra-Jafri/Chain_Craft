@@ -15,9 +15,10 @@ Login::Login(const string& file) : filename(file) {
     char choice;
     cout << "Do you want to load the blockchain from the file? (y/n): ";
     cin >> choice;
-    const string blockchainFile = "blockchain_data.dat";
+    const string blockchainFile = "blockchain.dat";
     if (choice == 'y' || choice == 'Y') {
         if (myBlockchain.loadFromFile(blockchainFile)) {
+            myBlockchain.printChain();
             cout << "Blockchain successfully loaded from file.\n";
         } else {
             cout << "Failed to load blockchain. Starting with a new blockchain.\n";
@@ -311,13 +312,6 @@ void Login::displayMenu() {
         } else if (choice == 3) {
             const string walletsFile = "wallets.dat";
             userWallet->saveAllToFile(wallets,walletsFile);
-            cout << "\n--- Save Blockchain to File ---\n";
-            const string blockchainFile = "blockchain_data.dat";
-            if (myBlockchain.saveToFile(blockchainFile)) {
-                cout << "Blockchain successfully saved to file.\n";
-            } else {
-                cout << "Failed to save blockchain to file.\n";
-            }
             cout << "Exiting...\n";
             break;
         } else {
