@@ -20,7 +20,7 @@ Wallet::~Wallet()
 // Method to generate RSA key pair using the custom RSA class
 void Wallet::generateKeys()
 {
-    RSA rsa;
+    //RSA rsa;
     rsa.generateKeys(); // Generates the key pair
 
     // Retrieve and store the public and private keys as pairs

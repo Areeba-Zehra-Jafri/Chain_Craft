@@ -4,6 +4,9 @@
 #include <sstream>
 #include <iomanip>
 #include <functional>
+#include<iostream>
+
+using namespace std;
 
 // Constructor to initialize a Transaction
 Transaction::Transaction(const std::string &sender, const std::string &receiver, double amount)
@@ -29,22 +32,63 @@ std::string Transaction::calculateHash() const
 // Sign the transaction using the RSA class
 unsigned long long Transaction::signTransaction(RSA &rsa)
 {
+    cout << "Calling Sign transaction function: " << endl;
+    // std::pair<unsigned long long, unsigned long long> private_key;
+    // private_key = rsa.getPrivateKey();
+    // cout << "Private key of sender is: " << private_key.first << " " << private_key.second << endl;
+    // std::pair<unsigned long long, unsigned long long> public_key;
+    // public_key = rsa.getPublicKey();
+    // cout << "Public key of sender is: " << public_key.first << " " << public_key.second << endl;
     // Hash the transaction data to a numeric value for signing
-    std::hash<std::string> str_hash;
-    unsigned long long dataNumeric = str_hash(getTransactionData());
-    signature = rsa.encrypt(dataNumeric); // Store the encrypted signature
+    //     std::hash<std::string> str_hash;
+    //     unsigned long long dataNumeric = str_hash(getTransactionData());
+    //    // signature = rsa.encrypt(dataNumeric); // Store the encrypted signature
+    //     signature=dataNumeric;
+    //     //cout<<"Signature after encryption: "<<signature<<endl;
+    //     return signature;
+
+    std::string transactionData = getTransactionData();
+    std::string hashValue = SHA256::hash(transactionData);  // Assuming SHA256::hash() returns the hash as a string
+    unsigned long long dataNumeric = std::stoull(hashValue.substr(0, 16), nullptr, 16); // Take the first 16 characters of the hash 
+    //unsigned long long encrypted_data=rsa.encrypt(dataNumeric);
+    //cout<<"Encrypted Data using RSA: "<<encrypted_data<<endl;
+    signature=dataNumeric;
+    //signature=encrypted_data;
     return signature;
 }
 
 
-// Verify the transaction signature using RSA
-bool Transaction::verifySignature(RSA &rsa)const
-{
-    unsigned long long decryptedData = rsa.decrypt(signature);
-    unsigned long long expectedDataNumeric = std::hash<std::string>{}(getTransactionData());
-    return decryptedData == expectedDataNumeric;
-}
 
+bool Transaction::verifySignature(RSA &rsa) const
+{
+    cout << "Calling verify signature: " << endl;
+    // std::pair<unsigned long long, unsigned long long> private_key;
+    // private_key = rsa.getPrivateKey();
+    // cout << "Private key of sender is: " << private_key.first << " " << private_key.second << endl;
+    // std::pair<unsigned long long, unsigned long long> public_key;
+    // public_key = rsa.getPublicKey();
+    // cout << "Public key of sender is: " << public_key.first << " " << public_key.second << endl;
+    // unsigned long long decryptedData = rsa.decrypt(signature);
+   //-- unsigned long long expectedDataNumeric = std::hash<std::string>{}(getTransactionData());
+    // cout<<"DECRYPTED Data: "<<decryptedData<<endl;
+    //  cout<<"expected  Data numeric : "<<expectedDataNumeric<<endl;
+    //  unsigned long long decryptedData = rsa.decrypt(expectedDataNumeric);
+    //  cout<<"Decrypting signature: "<<decryptedData<<endl;
+
+
+    // cout<<"Signature: "<<signature<<endl;
+    //--return signature == expectedDataNumeric;
+   // unsigned long long decrypted_data=rsa.decrypt(signature);
+
+    std::string transactionData = getTransactionData();
+    std::string hashValue = SHA256::hash(transactionData);  // Assuming SHA256::hash() returns the hash as a string
+    unsigned long long dataNumeric = std::stoull(hashValue.substr(0, 16), nullptr, 16);
+    //cout<<"Value of encrypted signature: "<<signature<<endl;
+    //cout<<"Value of decrypted data: "<<decrypted_data<<endl;
+    //cout<<"Value of data numeric: "<<dataNumeric<<endl;
+
+    return signature==dataNumeric;
+}
 // New method to check if the transaction is valid
 bool Transaction::isValid(RSA &publicKey)
 {

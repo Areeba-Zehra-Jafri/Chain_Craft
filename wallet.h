@@ -16,6 +16,7 @@ private:
 public:
     // Constructor
 
+    RSA rsa;
     const std::pair<unsigned long long, unsigned long long>& getPublicKey() const {
         return publicKey;
     }
