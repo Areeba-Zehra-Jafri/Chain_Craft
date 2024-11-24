@@ -19,6 +19,9 @@ public:
     Wallet(const std::string &id, const std::pair<long long, long long> &pubKey,
            const std::pair<long long, long long> &privKey, float initialBalance);  // Constructor for login
 
+    const std::pair<unsigned long long, unsigned long long>& getPublicKey() const {
+        return publicKey;
+    }
 
     void setBalance(float newBalance);
     

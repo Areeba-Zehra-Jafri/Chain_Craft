@@ -81,15 +81,26 @@ bool Blockchain::isChainValid()
             return false;
         }
 
-        // // Check the validity of each transaction in the current block
-        // for (auto &tx : currentBlock->transactions)
-        // {
-        //     RSA &publicKey = publicKeyMap[tx.get_sender()]; // Retrieve the sender's public key
-        //     if (!tx.isValid(publicKey))
-        //     { // Verify the transaction's signature
-        //         return false;
-        //     }
-        // }
+        cout<<"Checking signature: "<<endl;
+        bool flag=true;
+        // Check the validity of each transaction in the current block
+        for (auto &tx : currentBlock->transactions)
+        {
+            RSA &publicKey = publicKeyMap[tx.get_sender()]; // Retrieve the sender's public key
+            if (!tx.isValid(publicKey))
+
+            { // Verify the transaction's signature
+                //return false;
+                flag=false;
+                break;
+            }
+        }
+        if(flag)
+            cout<<"Siganture Transaction Valid: "<<endl;
+        else
+            cout<<"Signature not valid: "<<endl;
+
+       
     }
     return true;
 }

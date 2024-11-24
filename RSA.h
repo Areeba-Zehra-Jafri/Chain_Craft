@@ -3,7 +3,8 @@
 
 #include <utility>
 
-class RSA {
+class RSA
+{
 private:
     unsigned long long p, q, n, phi, e, d;
 
@@ -11,7 +12,7 @@ private:
     unsigned long long gcd(unsigned long long a, unsigned long long b);
     unsigned long long modInverse(unsigned long long a, unsigned long long m);
     unsigned long long modExp(unsigned long long base, unsigned long long exp, unsigned long long mod);
-    std::pair<unsigned long long, unsigned long long> publicKey; 
+    std::pair<unsigned long long, unsigned long long> publicKey;
 
 public:
     RSA();
@@ -34,10 +35,12 @@ public:
     // Set the private key (d, n)
     void setPrivateKey(unsigned long long privateKey, unsigned long long modulus);
 
-    void setPublicKey(const std::pair<unsigned long long, unsigned long long>& keyPair) {
-         publicKey = keyPair;
+    void set_PublicKey(unsigned long long ex, unsigned long long modulus);
+
+    void setPublicKey(const std::pair<unsigned long long, unsigned long long> &keyPair)
+    {
+        publicKey = keyPair;
     }
-    
 };
 
 #endif // RSA_H
