@@ -53,7 +53,9 @@ public:
 
     // Static method to load a wallet from a binary file
     static Wallet* loadFromFile(std::ifstream &inFile);
-     std::pair<unsigned long long, unsigned long long> getPublicKey() const;
+    //  std::pair<unsigned long long, unsigned long long> getPublicKey() const;
+
+    std::vector<Wallet*> loadAllFromFile(const std::string& filename);
 
 };
 

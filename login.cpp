@@ -10,7 +10,28 @@
 using namespace std;
 
 // Constructor to initialize the filename
-Login::Login(const string& file) : filename(file), myBlockchain() {
+Login::Login(const string& file) : filename(file) {
+    cout << "\n--- Loading Blockchain from File ---\n";
+    char choice;
+    cout << "Do you want to load the blockchain from the file? (y/n): ";
+    cin >> choice;
+    const string blockchainFile = "blockchain_data.dat";
+    if (choice == 'y' || choice == 'Y') {
+        if (myBlockchain.loadFromFile(blockchainFile)) {
+            cout << "Blockchain successfully loaded from file.\n";
+        } else {
+            cout << "Failed to load blockchain. Starting with a new blockchain.\n";
+        }
+    } 
+    else if (choice == 'n' || choice == 'N') {
+        cout << "Starting with a new blockchain.\n";
+        myBlockchain = Blockchain();
+    } else {
+        cout << "Invalid choice. Defaulting to a new blockchain.\n";
+    }
+    const string walletsFile = "wallets.dat";
+    Wallet w = Wallet("temp");
+    wallets= w.loadAllFromFile(walletsFile);
     loadUsers();
 }
 
@@ -151,7 +172,7 @@ Wallet* Login::login() {
 // Function to handle transactions
 void Login::performTransaction(Wallet* sender) {
 
-      sender->setBalance(80);
+      sender->setBalance(100);
 
     string receiverName;
     float amount;
@@ -174,8 +195,8 @@ if (users.find(receiverName) == users.end()) {
     }
 
     if (!receiver) {
-        receiver = new Wallet(receiverName);
-        wallets.push_back(receiver); // Add temporary wallet to wallets
+        cout<<"reciever does not exist"<<endl;
+        return;
     }
 
     cout << "Enter Amount to Send: ";
@@ -288,6 +309,13 @@ void Login::displayMenu() {
         } else if (choice == 2) {
             signup();
         } else if (choice == 3) {
+            cout << "\n--- Save Blockchain to File ---\n";
+            const string blockchainFile = "blockchain_data.dat";
+            if (myBlockchain.saveToFile(blockchainFile)) {
+                cout << "Blockchain successfully saved to file.\n";
+            } else {
+                cout << "Failed to save blockchain to file.\n";
+            }
             cout << "Exiting...\n";
             break;
         } else {

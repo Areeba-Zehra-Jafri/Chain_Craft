@@ -48,78 +48,78 @@ int main() {
     loginSystem.displayMenu();      // Display the main menu
 
     // Blockchain simulation after user login
-    cout << "\n--- Blockchain Simulation ---\n";
-    cout << "Welcome to Blockchain Simulation!" << endl;
-    Blockchain myBlockchain;
+//     cout << "\n--- Blockchain Simulation ---\n";
+//     cout << "Welcome to Blockchain Simulation!" << endl;
+//     Blockchain myBlockchain;
 
 
-     const string blockchainFile = "blockchain_data.txt";
-    loadBlockchain(myBlockchain, blockchainFile);
+//      const string blockchainFile = "blockchain_data.txt";
+//     loadBlockchain(myBlockchain, blockchainFile);
     
-    // Create wallets
-    Wallet alice("Alice");
-    Wallet bob("Bob");
-    Wallet charlie("Charlie");
+//     // Create wallets
+//     Wallet alice("Alice");
+//     Wallet bob("Bob");
+//     Wallet charlie("Charlie");
 
-    // Initialize balances
-    alice.setBalance(100);
-    bob.setBalance(0);
-    charlie.setBalance(0);
+//     // Initialize balances
+//     alice.setBalance(100);
+//     bob.setBalance(0);
+//     charlie.setBalance(0);
 
-    // Create a vector to hold wallet pointers
-    vector<Wallet *> wallets = {&alice, &bob, &charlie};
+//     // Create a vector to hold wallet pointers
+//     vector<Wallet *> wallets = {&alice, &bob, &charlie};
 
-    // First set of transactions
-    cout << "\n--- First Set of Transactions ---\n";
-    Transaction tx1 = alice.sendFunds(bob, 50);
-    Transaction tx2 = alice.sendFunds(charlie, 50);
+//     // First set of transactions
+//     cout << "\n--- First Set of Transactions ---\n";
+//     Transaction tx1 = alice.sendFunds(bob, 50);
+//     Transaction tx2 = alice.sendFunds(charlie, 50);
 
-    // Add transactions to blockchain and mine them in a new block
-    myBlockchain.createTransaction(tx1);
-    myBlockchain.createTransaction(tx2);
-    myBlockchain.minePendingTransactions();
+//     // Add transactions to blockchain and mine them in a new block
+//     myBlockchain.createTransaction(tx1);
+//     myBlockchain.createTransaction(tx2);
+//     myBlockchain.minePendingTransactions();
 
-    // Update wallet balances after first mining
-    myBlockchain.notifyWallets(wallets);
+//     // Update wallet balances after first mining
+//     myBlockchain.notifyWallets(wallets);
 
-    // Print blockchain and wallet balances
-    myBlockchain.printChain();
-    cout << "Wallet Balances after First Mining:\n";
-    for (const auto &wallet : wallets) {
-        wallet->printWalletData();
-    }
+//     // Print blockchain and wallet balances
+//     myBlockchain.printChain();
+//     cout << "Wallet Balances after First Mining:\n";
+//     for (const auto &wallet : wallets) {
+//         wallet->printWalletData();
+//     }
 
-    cout << endl;
+//     cout << endl;
 
-    // Second set of transactions
-    cout << "\n--- Second Set of Transactions ---\n";
-    Transaction tx3 = charlie.sendFunds(alice, 20); // Charlie sends to Alice
-    Transaction tx4 = bob.sendFunds(alice, 10);     // Bob sends to Alice
+//     // Second set of transactions
+//     cout << "\n--- Second Set of Transactions ---\n";
+//     Transaction tx3 = charlie.sendFunds(alice, 20); // Charlie sends to Alice
+//     Transaction tx4 = bob.sendFunds(alice, 10);     // Bob sends to Alice
 
-    // Add transactions and mine them in a new block
-    myBlockchain.createTransaction(tx3);
-    myBlockchain.createTransaction(tx4);
-    myBlockchain.minePendingTransactions();
+//     // Add transactions and mine them in a new block
+//     myBlockchain.createTransaction(tx3);
+//     myBlockchain.createTransaction(tx4);
+//     myBlockchain.minePendingTransactions();
 
-    // Update wallet balances after second mining
-    myBlockchain.notifyWallets(wallets);
+//     // Update wallet balances after second mining
+//     myBlockchain.notifyWallets(wallets);
 
-    // Print blockchain and wallet balances
-    myBlockchain.printChain();
-    cout << "Wallet Balances after Second Mining:\n";
-    for (const auto &wallet : wallets) {
-        wallet->printWalletData();
-    }
+//     // Print blockchain and wallet balances
+//     myBlockchain.printChain();
+//     cout << "Wallet Balances after Second Mining:\n";
+//     for (const auto &wallet : wallets) {
+//         wallet->printWalletData();
+//     }
 
-    // Validate blockchain integrity
-    if (myBlockchain.isChainValid()) {
-        cout << "Blockchain is valid.\n";
-    } else {
-        cout << "Blockchain is not valid!\n";
-    }
+//     // Validate blockchain integrity
+//     if (myBlockchain.isChainValid()) {
+//         cout << "Blockchain is valid.\n";
+//     } else {
+//         cout << "Blockchain is not valid!\n";
+//     }
 
-    // Save blockchain before exiting
-   saveBlockchain(myBlockchain, blockchainFile);
+//     // Save blockchain before exiting
+//    saveBlockchain(myBlockchain, blockchainFile);
 
     return 0;
 }

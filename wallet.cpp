@@ -26,7 +26,7 @@ Wallet::~Wallet()
 // Method to generate RSA key pair using the custom RSA class
 void Wallet::generateKeys()
 {
-    //RSA rsa;
+    RSA rsa;
     rsa.generateKeys(); // Generates the key pair
 
     // Retrieve and store the public and private keys as pairs
@@ -113,9 +113,9 @@ void Wallet::setBalance(float newBalance)
     balance = newBalance;
 }
 
-std::pair<unsigned long long, unsigned long long> Wallet::getPublicKey() const {
-    return publicKey;  // Assuming publicKey is a member variable of Wallet
-}
+// std::pair<unsigned long long, unsigned long long> Wallet::getPublicKey() const {
+//     return publicKey;  // Assuming publicKey is a member variable of Wallet
+// }
 // Save wallet data to binary file
 void Wallet::saveToFile(std::ofstream &outFile) const {
     size_t idLength = id.size();
@@ -154,6 +154,42 @@ Wallet* Wallet::loadFromFile(std::ifstream &inFile) {
     inFile.read(reinterpret_cast<char*>(&balance), sizeof(balance));
     
     return new Wallet(id, pubKey, privKey, balance);
+}
+// Static method to load all wallets from a binary file into a vector
+std::vector<Wallet*> Wallet::loadAllFromFile(const std::string& filename) {
+    std::vector<Wallet*> wallets;
+    std::ifstream inFile(filename, std::ios::binary);
 
-  
+    if (!inFile.is_open()) {
+        throw std::runtime_error("Unable to open file for loading wallets.");
+    }
+
+    while (inFile.peek() != EOF) { // Continue until the end of the file
+        size_t idLength;
+        inFile.read(reinterpret_cast<char*>(&idLength), sizeof(idLength));
+        
+        if (inFile.eof()) break; // Stop if the end of the file is reached
+        
+        char* idBuffer = new char[idLength + 1];
+        inFile.read(idBuffer, idLength);
+        idBuffer[idLength] = '\0';
+
+        std::string id(idBuffer);
+        delete[] idBuffer;
+
+        std::pair<long long, long long> pubKey, privKey;
+        inFile.read(reinterpret_cast<char*>(&pubKey.first), sizeof(pubKey.first));
+        inFile.read(reinterpret_cast<char*>(&pubKey.second), sizeof(pubKey.second));
+
+        inFile.read(reinterpret_cast<char*>(&privKey.first), sizeof(privKey.first));
+        inFile.read(reinterpret_cast<char*>(&privKey.second), sizeof(privKey.second));
+
+        float balance;
+        inFile.read(reinterpret_cast<char*>(&balance), sizeof(balance));
+
+        wallets.push_back(new Wallet(id, pubKey, privKey, balance));
+    }
+
+    inFile.close();
+    return wallets;
 }
