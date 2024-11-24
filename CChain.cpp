@@ -165,7 +165,16 @@ void Blockchain::printChain()
         std::cout << "Block Hash: " << currentBlock->blockHash << std::endl;
 
         // Print Merkle Root of the current block
-        std::cout << "Merkle Root of block: " << currentBlock->getMerkleRoot() << std::endl;
+       // std::cout << "Merkle Root of block: " << currentBlock->getMerkleRoot() << std::endl;
+string merkleRoot = currentBlock->getMerkleRoot();
+        if (!merkleRoot.empty())
+        {
+            std::cout << "Merkle Root of block: " << merkleRoot << std::endl;
+        }
+        else
+        {
+            std::cout << "Merkle Root of block: No transactions in this block\n";
+        }
 
         // Print Merkle Root of the entire blockchain
         std::cout << "Merkle Root of Blockchain: " << calculateBlockchainMerkleRoot() << std::endl;
@@ -216,7 +225,7 @@ void Blockchain::notifyWallets(std::vector<Wallet *> &wallets)
     }
 }
 
-void Blockchain::saveToFile(const std::string &filename)
+bool Blockchain::saveToFile(const std::string &filename) const
 {
     std::ofstream outFile(filename, std::ios::binary | std::ios::trunc);
     if (!outFile.is_open())
@@ -256,7 +265,7 @@ void Blockchain::saveToFile(const std::string &filename)
     outFile.close();
     std::cout << "Blockchain saved to file: " << filename << std::endl;
 }
-void Blockchain::loadFromFile(const std::string &filename)
+bool Blockchain::loadFromFile(const std::string &filename)
 {
     std::ifstream inFile(filename, std::ios::binary);
     if (!inFile.is_open())
