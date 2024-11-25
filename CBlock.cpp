@@ -37,13 +37,19 @@ Block::Block(std::vector<Transaction> transactions, Block *previoushash, int dif
     this->difficulty = difficulty;
     this->nonce = 0;
     this->blockHash = mineBlock(); // Compute the block's hash
+
+     cout << "\033[34m--------------------------------------------------\033[0m\n";
+    cout << "\033[34mBlock successfully created with hash:\033[0m " << this->blockHash << "\n";
+    cout << "\033[34m--------------------------------------------------\033[0m\n";
 }
 
 Block::Block(const std::vector<Transaction>& transactions, Block* prevBlock, int nonce, 
           const std::string& blockHash, const std::chrono::system_clock::time_point& timestamp)
         : transactions(transactions), prevhash(prevBlock), nonce(nonce), blockHash(blockHash), timestamp(timestamp) {
         // No additional computation
-        std::cout << "\033[34mSimplified Block constructor called.\033[0m" << std::endl;
+       cout << "\033[34m--------------------------------------------------\033[0m\n";
+        cout << "\033[34mSimplified Block constructor called.\033[0m\n";
+        cout << "\033[34m--------------------------------------------------\033[0m\n";
     }
 // Mining function to find a valid hash for the block based on the given difficulty
 std::string Block::mineBlock()
@@ -126,6 +132,9 @@ std::string Block::calculateMerkleRoot()
 {
     if (transactions.empty())
     {  
+          cout << "\033[31m--------------------------------------------------\033[0m\n";
+        cout << "\033[31mError: No transactions in the block.\033[0m\n";
+        cout << "\033[31m--------------------------------------------------\033[0m\n";
         return ""; // Return empty string if no transactions
     }
 
@@ -161,6 +170,9 @@ std::string Block::calculateMerkleRoot()
     }
 
     // Step 3: The root of the Merkle Tree is the only element left
+     cout << "\033[34m--------------------------------------------------\033[0m\n";
+    cout << "\033[34mMerkle Root calculated successfully:\033[0m " << nodes[0]->hash << "\n";
+    cout << "\033[34m--------------------------------------------------\033[0m\n";
     return nodes.empty() ? "" : nodes[0]->hash;
 }
 

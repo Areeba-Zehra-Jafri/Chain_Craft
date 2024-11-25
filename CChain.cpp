@@ -49,7 +49,7 @@ void Blockchain::minePendingTransactions()
     latestBlock = newBlock;            // Update the latest block to the newly mined block
     chain.push_back(*newBlock);        // Add the mined block to the chain (optional)
 
-    std::cout << "[DEBUG] Mined new block: " << newBlock->blockHash << std::endl;
+    std::cout << "Mined new block: " << newBlock->blockHash << std::endl;
 }
 
 // Check if a block's hash is valid
@@ -86,19 +86,19 @@ bool Blockchain::isChainValid()
         //if (currentBlock->blockHash != currentBlock->generateHash()) { 
         string calculateHash = currentBlock->generateHash(); 
         if (currentBlock->blockHash != calculateHash) {
-            cout << "Invalid block hash at index " << i << endl; 
+            cout << "\033[31mInvalid block hash at index\033[0m " << i << endl; 
              cout << "Expected: " << calculateHash << endl; 
             cout << "Found: " << currentBlock->blockHash << endl;
             return false; } // Ensure the previous block's hash matches 
 
         if (currentBlock->prevhash != nullptr && currentBlock->prevhash->blockHash != previousBlock->blockHash) { 
-            cout << "Invalid previous hash at index " << i << endl; 
+            cout << "\033[31mInvalid previous hash at index\033[0m " << i << endl; 
              cout << "Expected: " << previousBlock->blockHash << endl;
              cout << "Found: " << currentBlock->prevhash->blockHash << endl;
               
             return false; }
 
-        cout<<"Checking signature: "<<endl;
+        cout<<"\033[33mChecking signature:\033[0m "<<endl;
         bool flag=true;
         // Check the validity of each transaction in the current block
         for (auto &tx : currentBlock->transactions)
@@ -113,7 +113,7 @@ bool Blockchain::isChainValid()
             }
         }
         if(flag)
-            cout<<"Siganture Transaction Valid: "<<endl;
+            cout<<"\033[34mSiganture Transaction Valid:\033[0m "<<endl;
         else
             cout<<"\033[31mSignature not valid \033[0m"<<endl;
 
@@ -167,7 +167,7 @@ std::string Blockchain::calculateBlockchainMerkleRoot()
 void Blockchain::printChain()
 {
     Block *currentBlock = latestBlock; // Start from the genesis block
-    std::cout << "Printing Blockchain...\n";
+    std::cout << "\033[33mPrinting Blockchain...\n\033[0m";
     
     while (currentBlock != nullptr)
     {
@@ -201,7 +201,7 @@ string merkleRoot = currentBlock->getMerkleRoot();
         }
         else
         {
-            std::cout << "Merkle Root of block: No transactions in this block\n";
+            std::cout << "\033[31mMerkle Root of block: No transactions in this block\n\033[0m";
         }
 
         // Print Merkle Root of the entire blockchain
@@ -223,7 +223,7 @@ string merkleRoot = currentBlock->getMerkleRoot();
         currentBlock = currentBlock->prevhash ? currentBlock->prevhash : nullptr;
     }
     if(isChainValid())
-        cout<<"BlockChain is Valid: "<<endl;
+        cout<<"\033[34mBlockChain is Valid:\033[0m "<<endl;
     else 
         cout<<"\033[31mBlockChain is not valid\033[0m "<<endl;
 }

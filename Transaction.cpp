@@ -32,7 +32,7 @@ std::string Transaction::calculateHash() const
 // Sign the transaction using the RSA class
 unsigned long long Transaction::signTransaction(RSA &rsa)
 {
-    cout << "Calling Sign transaction function: " << endl;
+    cout << "\033[33mCalling Sign transaction function: \033[0m" << endl;
     // std::pair<unsigned long long, unsigned long long> private_key;
     // private_key = rsa.getPrivateKey();
     // cout << "Private key of sender is: " << private_key.first << " " << private_key.second << endl;
@@ -61,7 +61,7 @@ unsigned long long Transaction::signTransaction(RSA &rsa)
 
 bool Transaction::verifySignature(RSA &rsa) const
 {
-    cout << "Calling verify signature: " << endl;
+    cout << "\033[33mCalling verify signature: \033[0m" << endl;
     // std::pair<unsigned long long, unsigned long long> private_key;
     // private_key = rsa.getPrivateKey();
     // cout << "Private key of sender is: " << private_key.first << " " << private_key.second << endl;
