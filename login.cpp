@@ -33,9 +33,11 @@ Login::Login(const string& file) : filename(file) {
     const string walletsFile = "wallets.dat";
     Wallet w = Wallet("temp");
     wallets= w.loadAllFromFile(walletsFile);
+    for (auto wallet : wallets) { 
+        cout << "Loaded wallet: " << wallet->getId() << endl; // Debug print
+         }
     loadUsers();
 }
-
 // Destructor to clean up dynamic memory
 Login::~Login() {
     for (auto wallet : wallets) {
@@ -57,6 +59,7 @@ void Login::loadUsers() {
     string username, password;
     while (file >> username >> password) {
         users[username] = password;
+        cout << "Loaded user: " << username << " with password: " << password << endl; // Debug print
     }
 }
 
@@ -143,7 +146,9 @@ void Login::signup() {
 // Function to handle login
 Wallet* Login::login() {
     string username, password;
+    int retryCount = 3; 
 
+while (retryCount > 0) {
     cout << "Enter Username: ";
     cin >> username;
     cout << "Enter Password: ";
@@ -154,26 +159,44 @@ Wallet* Login::login() {
         cout << "Login successful! Welcome, " << username << "!\n";
         ifstream walletFile("wallets.dat", ios::binary);
         Wallet* userWallet = nullptr;
-        while (walletFile) {
+
+         if (walletFile.is_open()) {
+            while (!walletFile.eof()) {
             userWallet = Wallet::loadFromFile(walletFile);
             if (userWallet && userWallet->getId() == username) {
                 break;
             }
-            delete userWallet; // Delete the loaded wallet if it's not the correct one
+           delete userWallet; // Free memory if this wallet does not match
+                userWallet = nullptr; // Avoid using deleted pointer
+            }
+            walletFile.close(); // Close the file
+        } else {
+            cout << "Error: Unable to open wallet file.\n";
         }
-        walletFile.close();
 
-        return userWallet;
+        return userWallet; // Return the found wallet
+
     } else {
         cout << "Error: Invalid username or password.\n";
-        return nullptr;
+          retryCount--;  // Decrease the retry count
+            if (retryCount > 0) {
+                cout << "You have " << retryCount << " attempts remaining.\n";
+            }
+        }
     }
+
+    cout << "Maximum login attempts exceeded. Please try again later.\n";
+    return nullptr;  // Return null if the retry limit is exceeded
 }
+        
+
 
 // Function to handle transactions
 void Login::performTransaction(Wallet* sender) {
 
-      sender->setBalance(100);
+ if (sender->getBalance() == 0) {
+     sender->setBalance(100); // Set initial balance to 100 for demonstration purposes
+      }
 
     string receiverName;
     float amount;
@@ -189,8 +212,12 @@ if (users.find(receiverName) == users.end()) {
     // Check if receiver exists
     Wallet* receiver = nullptr;
     for (auto wallet : wallets) {
-        if (wallet->getId() == receiverName) {
+     cout << "Checking wallet: " << wallet->getId() << endl; // Debug print
+        if (wallet && wallet->getId() == receiverName) {
             receiver = wallet;
+            if (receiver->getBalance() == 0) { 
+                receiver->setBalance(0); // Set initial balance to zero
+                 }
             break;
         }
     }
@@ -199,6 +226,9 @@ if (users.find(receiverName) == users.end()) {
         cout<<"reciever does not exist"<<endl;
         return;
     }
+
+    cout << "Sender Initial Balance: " << sender->getBalance() << endl;
+cout << "Receiver Initial Balance: " << receiver->getBalance() << endl;
 
     cout << "Enter Amount to Send: ";
     cin >> amount;
@@ -220,9 +250,12 @@ if (users.find(receiverName) == users.end()) {
         cout << "Transaction failed due to insufficient balance.\n";
         return;
     }
+     // Update balances directly after transaction creation
+    sender->updateBalance({tx}); // Deduct from sender
+    receiver->updateBalance({tx}); // Add to receiver
 
-     sender->setBalance(sender->getBalance() - amount);   // Deduct the amount from sender's balance
-    receiver->setBalance(receiver->getBalance() + amount); // Add the amount to receiver's balance
+    cout << "Sender Balance After Transaction: " << sender->getBalance() << endl;
+cout << "Receiver Balance After Transaction: " << receiver->getBalance() << endl;
 
     myBlockchain.createTransaction(tx);
     cout << "Transaction successfully added to the blockchain queue.\n";

@@ -34,7 +34,7 @@ void Blockchain::minePendingTransactions()
    // Check if there are pending transactions to mine
     if (pendingTransactions.empty())
     {
-        std::cout << "No pending transactions to mine." << std::endl;
+        std::cout << "\033[31mNo pending transactions to mine.\033[0m" << std::endl;
         return;
     }
     // Collect transactions from the queue to create a block
@@ -73,16 +73,30 @@ bool Blockchain::isChainValid()
         Block *previousBlock = &chain[i - 1]; // Simply use the previous block in the vector
 
         // Check if the current block's hash is valid
-        if (!isBlockHashValid(*currentBlock))
-        {
-            return false;
-        }
+        // if (!isBlockHashValid(*currentBlock))
+        // {
+        //     return false;
+        // }
 
-        // Ensure the previous block's hash matches
-        if (currentBlock->prevhash != nullptr && currentBlock->prevhash->blockHash != previousBlock->blockHash)
-        {
-            return false;
-        }
+        // // Ensure the previous block's hash matches
+        // if (currentBlock->prevhash != nullptr && currentBlock->prevhash->blockHash != previousBlock->blockHash)
+        // {
+        //     return false;
+        // }
+        //if (currentBlock->blockHash != currentBlock->generateHash()) { 
+        string calculateHash = currentBlock->generateHash(); 
+        if (currentBlock->blockHash != calculateHash) {
+            cout << "Invalid block hash at index " << i << endl; 
+             cout << "Expected: " << calculateHash << endl; 
+            cout << "Found: " << currentBlock->blockHash << endl;
+            return false; } // Ensure the previous block's hash matches 
+
+        if (currentBlock->prevhash != nullptr && currentBlock->prevhash->blockHash != previousBlock->blockHash) { 
+            cout << "Invalid previous hash at index " << i << endl; 
+             cout << "Expected: " << previousBlock->blockHash << endl;
+             cout << "Found: " << currentBlock->prevhash->blockHash << endl;
+              
+            return false; }
 
         cout<<"Checking signature: "<<endl;
         bool flag=true;
@@ -101,7 +115,7 @@ bool Blockchain::isChainValid()
         if(flag)
             cout<<"Siganture Transaction Valid: "<<endl;
         else
-            cout<<"Signature not valid: "<<endl;
+            cout<<"\033[31mSignature not valid \033[0m"<<endl;
 
        
     }
@@ -169,7 +183,7 @@ void Blockchain::printChain()
         }
         else
         {
-            std::cout << "Block Timestamp: Invalid Timestamp" << std::endl;
+            std::cout << "\033[31mBlock Timestamp: Invalid Timestamp\033[0m" << std::endl;
         }
 
         // Print previous block's hash, or "None" if this is the genesis block
@@ -211,7 +225,7 @@ string merkleRoot = currentBlock->getMerkleRoot();
     if(isChainValid())
         cout<<"BlockChain is Valid: "<<endl;
     else 
-        cout<<"BlockChain is not valid: "<<endl;
+        cout<<"\033[31mBlockChain is not valid\033[0m "<<endl;
 }
 
 
