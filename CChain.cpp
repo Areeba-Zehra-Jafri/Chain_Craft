@@ -113,9 +113,14 @@ bool Blockchain::isChainValid()
             }
         }
         if(flag)
-            cout<<"\033[34mSiganture Transaction Valid:\033[0m "<<endl;
+    cout << "\033[34m--------------------------------------------------\033[0m\n";
+    cout << "\033[34mSignature Verified: Transaction is Valid\033[0m" << endl;
+    cout << "\033[34m--------------------------------------------------\033[0m\n";
         else
-            cout<<"\033[31mSignature not valid \033[0m"<<endl;
+
+         cout << "\033[31m--------------------------------------------------\033[0m\n";
+        cout<<"\033[31mSignature not valid \033[0m"<<endl;
+        cout << "\033[31m--------------------------------------------------\033[0m\n";
 
        
     }
@@ -167,7 +172,7 @@ std::string Blockchain::calculateBlockchainMerkleRoot()
 void Blockchain::printChain()
 {
     Block *currentBlock = latestBlock; // Start from the genesis block
-    std::cout << "\033[33mPrinting Blockchain...\n\033[0m";
+    std::cout << "\033[33mPrinting Blockchain...\033[0m\n";
     
     while (currentBlock != nullptr)
     {
@@ -201,7 +206,7 @@ string merkleRoot = currentBlock->getMerkleRoot();
         }
         else
         {
-            std::cout << "\033[31mMerkle Root of block: No transactions in this block\n\033[0m";
+            std::cout << "\033[31mMerkle Root of block: No transactions in this block\033[0m\n";
         }
 
         // Print Merkle Root of the entire blockchain
@@ -223,9 +228,13 @@ string merkleRoot = currentBlock->getMerkleRoot();
         currentBlock = currentBlock->prevhash ? currentBlock->prevhash : nullptr;
     }
     if(isChainValid())
+        cout<< "\033[34m--------------------------------------------------\033[0m\n";
         cout<<"\033[34mBlockChain is Valid:\033[0m "<<endl;
+         cout << "\033[34m--------------------------------------------------\033[0m\n";
     else 
+     cout << "\033[31m--------------------------------------------------\033[0m\n";
         cout<<"\033[31mBlockChain is not valid\033[0m "<<endl;
+     cout << "\033[31m--------------------------------------------------\033[0m\n";
 }
 
 
