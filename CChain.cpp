@@ -251,24 +251,183 @@ void Blockchain::notifyWallets(std::vector<Wallet *> &wallets)
     }
 }
 
+// bool Blockchain::saveToFile(const string& filename) const {
+//     cout << "[DEBUG] Starting saveToFile function." << endl;
+
+//     ofstream outFile(filename, ios::binary | ios::trunc);
+//     if (!outFile.is_open()) {
+//         cerr << "[ERROR] Unable to open file for saving blockchain." << endl;
+//         throw runtime_error("Unable to open file for saving blockchain.");
+//     }
+
+//     Block* currentBlock = latestBlock;
+//     while (currentBlock != nullptr) {
+//         cout << "[DEBUG] Saving block: " << currentBlock->blockHash << endl;
+
+//         // Save block hash
+//         size_t hashSize = currentBlock->blockHash.size();
+//         outFile.write(reinterpret_cast<const char*>(&hashSize), sizeof(hashSize));
+//         outFile.write(currentBlock->blockHash.data(), hashSize);
+//         cout << "[DEBUG] Block hash saved (size: " << hashSize << ")." << endl;
+
+//         // Save previous hash
+//         bool hasPrevHash = currentBlock->prevhash != nullptr;
+//         outFile.write(reinterpret_cast<const char*>(&hasPrevHash), sizeof(hasPrevHash));
+//         if (hasPrevHash) {
+//             size_t prevHashSize = currentBlock->prevhash->blockHash.size();
+//             outFile.write(reinterpret_cast<const char*>(&prevHashSize), sizeof(prevHashSize));
+//             outFile.write(currentBlock->prevhash->blockHash.data(), prevHashSize);
+//             cout << "[DEBUG] Previous hash saved (size: " << prevHashSize << ")." << endl;
+//         } else {
+//             cout << "[DEBUG] No previous hash to save." << endl;
+//         }
+
+//         // Save Merkle root
+//         string merkleRoot = currentBlock->getMerkleRoot();
+//         size_t merkleSize = merkleRoot.size();
+//         outFile.write(reinterpret_cast<const char*>(&merkleSize), sizeof(merkleSize));
+//         outFile.write(merkleRoot.data(), merkleSize);
+//         cout << "[DEBUG] Merkle root saved (size: " << merkleSize << ")." << endl;
+
+//         // Save nonce
+//         outFile.write(reinterpret_cast<const char*>(&currentBlock->nonce), sizeof(currentBlock->nonce));
+//         cout << "[DEBUG] Nonce saved: " << currentBlock->nonce << endl;
+
+//         // Save timestamp
+//         time_t timestamp = chrono::system_clock::to_time_t(currentBlock->timestamp);
+//         outFile.write(reinterpret_cast<const char*>(&timestamp), sizeof(timestamp));
+//         cout << "[DEBUG] Timestamp saved: " << timestamp << endl;
+
+//         // Save transactions
+//         size_t txCount = currentBlock->transactions.size();
+//         outFile.write(reinterpret_cast<const char*>(&txCount), sizeof(txCount));
+//         cout << "[DEBUG] Number of transactions: " << txCount << endl;
+
+//         for (const auto& tx : currentBlock->transactions) {
+//             // Save sender
+//             size_t senderSize = tx.get_sender().size();
+//             outFile.write(reinterpret_cast<const char*>(&senderSize), sizeof(senderSize));
+//             outFile.write(tx.get_sender().data(), senderSize);
+//             cout << "[DEBUG] Sender saved: " << tx.get_sender() << endl;
+
+//             // Save receiver
+//             size_t receiverSize = tx.get_receiver().size();
+//             outFile.write(reinterpret_cast<const char*>(&receiverSize), sizeof(receiverSize));
+//             outFile.write(tx.get_receiver().data(), receiverSize);
+//             cout << "[DEBUG] Receiver saved: " << tx.get_receiver() << endl;
+
+//             // Save amount
+//             double amount = tx.get_amount();
+//             outFile.write(reinterpret_cast<const char*>(&amount), sizeof(amount));
+//             cout << "[DEBUG] Amount saved: " << amount << endl;
+//         }
+
+//         currentBlock = currentBlock->prevhash; // Move to the previous block
+//     }
+
+//     outFile.close();
+//     cout << "[DEBUG] saveToFile completed successfully." << endl;
+//     return true;
+//  }
+// bool Blockchain::saveToFile(const string& filename) const {
+//     cout << "[DEBUG] Starting saveToFile function." << endl;
+
+//     ofstream outFile(filename, ios::binary | ios::trunc);
+//     if (!outFile.is_open()) {
+//         cerr << "[ERROR] Unable to open file for saving blockchain." << endl;
+//         throw runtime_error("Unable to open file for saving blockchain.");
+//     }
+
+//     try {
+//         Block* currentBlock = latestBlock;
+//         while (currentBlock != nullptr) {
+//             cout << "[DEBUG] Saving block: " << currentBlock->blockHash << endl;
+
+//             // Save block hash
+//             size_t hashSize = currentBlock->blockHash.size();
+//             outFile.write(reinterpret_cast<const char*>(&hashSize), sizeof(hashSize));
+//             outFile.write(currentBlock->blockHash.data(), hashSize);
+//             if (!outFile) throw runtime_error("Failed to write block hash.");
+
+//             // Save previous hash
+//             bool hasPrevHash = currentBlock->prevhash != nullptr;
+//             outFile.write(reinterpret_cast<const char*>(&hasPrevHash), sizeof(hasPrevHash));
+//             if (hasPrevHash) {
+//                 size_t prevHashSize = currentBlock->prevhash->blockHash.size();
+//                 outFile.write(reinterpret_cast<const char*>(&prevHashSize), sizeof(prevHashSize));
+//                 outFile.write(currentBlock->prevhash->blockHash.data(), prevHashSize);
+//                 if (!outFile) throw runtime_error("Failed to write previous block hash.");
+//             }
+
+//             // Save Merkle root
+//             string merkleRoot = currentBlock->getMerkleRoot();
+//             size_t merkleSize = merkleRoot.size();
+//             outFile.write(reinterpret_cast<const char*>(&merkleSize), sizeof(merkleSize));
+//             outFile.write(merkleRoot.data(), merkleSize);
+//             if (!outFile) throw runtime_error("Failed to write Merkle root.");
+
+//             // Save nonce
+//             outFile.write(reinterpret_cast<const char*>(&currentBlock->nonce), sizeof(currentBlock->nonce));
+//             if (!outFile) throw runtime_error("Failed to write nonce.");
+
+//             // Save timestamp
+//             time_t timestamp = chrono::system_clock::to_time_t(currentBlock->timestamp);
+//             outFile.write(reinterpret_cast<const char*>(&timestamp), sizeof(timestamp));
+//             if (!outFile) throw runtime_error("Failed to write timestamp.");
+
+//             // Save transactions
+//             size_t txCount = currentBlock->transactions.size();
+//             outFile.write(reinterpret_cast<const char*>(&txCount), sizeof(txCount));
+//             if (!outFile) throw runtime_error("Failed to write transaction count.");
+
+//             for (const auto& tx : currentBlock->transactions) {
+//                 size_t senderSize = tx.get_sender().size();
+//                 outFile.write(reinterpret_cast<const char*>(&senderSize), sizeof(senderSize));
+//                 outFile.write(tx.get_sender().data(), senderSize);
+
+//                 size_t receiverSize = tx.get_receiver().size();
+//                 outFile.write(reinterpret_cast<const char*>(&receiverSize), sizeof(receiverSize));
+//                 outFile.write(tx.get_receiver().data(), receiverSize);
+
+//                 double amount = tx.get_amount();
+//                 outFile.write(reinterpret_cast<const char*>(&amount), sizeof(amount));
+
+//                 if (!outFile) throw runtime_error("Failed to write transaction data.");
+//             }
+
+//             currentBlock = currentBlock->prevhash; // Move to the previous block
+//         }
+
+//     } catch (const exception& e) {
+//         cerr << "[ERROR] Exception occurred during saveToFile: " << e.what() << endl;
+//         outFile.close();
+//         throw; // Rethrow the exception for the caller to handle
+//     }
+
+//     outFile.close();
+//     cout << "[DEBUG] saveToFile completed successfully." << endl;
+//     return true;
+// }
+
 bool Blockchain::saveToFile(const string& filename) const {
     cout << " Starting saveToFile function." << endl;
 
+    // Open the file with truncation to ensure it starts fresh
     ofstream outFile(filename, ios::binary | ios::trunc);
     if (!outFile.is_open()) {
-        cerr << "\033[31m Unable to open file for saving blockchain.\033[0m" << endl;
-        throw runtime_error("\033[31mUnable to open file for saving blockchain.\033[0m");
+        cerr << "[ERROR] Unable to open file for saving blockchain." << endl;
+        throw runtime_error("Unable to open file for saving blockchain.");
     }
 
     Block* currentBlock = latestBlock;
     while (currentBlock != nullptr) {
-        cout << " Saving block: " << currentBlock->blockHash << endl;
+        cout << "[DEBUG] Saving block: " << currentBlock->blockHash << endl;
 
         // Save block hash
         size_t hashSize = currentBlock->blockHash.size();
         outFile.write(reinterpret_cast<const char*>(&hashSize), sizeof(hashSize));
         outFile.write(currentBlock->blockHash.data(), hashSize);
-        cout << " Block hash saved (size: " << hashSize << ")." << endl;
+        cout << "[DEBUG] Block hash saved (size: " << hashSize << ")." << endl;
 
         // Save previous hash
         bool hasPrevHash = currentBlock->prevhash != nullptr;
@@ -277,9 +436,9 @@ bool Blockchain::saveToFile(const string& filename) const {
             size_t prevHashSize = currentBlock->prevhash->blockHash.size();
             outFile.write(reinterpret_cast<const char*>(&prevHashSize), sizeof(prevHashSize));
             outFile.write(currentBlock->prevhash->blockHash.data(), prevHashSize);
-            cout << " Previous hash saved (size: " << prevHashSize << ")." << endl;
+            cout << "[DEBUG] Previous hash saved (size: " << prevHashSize << ")." << endl;
         } else {
-            cout << "\033[31m No previous hash to save.\033[0m" << endl;
+            cout << "[DEBUG] No previous hash to save." << endl;
         }
 
         // Save Merkle root
@@ -287,48 +446,53 @@ bool Blockchain::saveToFile(const string& filename) const {
         size_t merkleSize = merkleRoot.size();
         outFile.write(reinterpret_cast<const char*>(&merkleSize), sizeof(merkleSize));
         outFile.write(merkleRoot.data(), merkleSize);
-        cout << " Merkle root saved (size: " << merkleSize << ")." << endl;
+        cout << "[DEBUG] Merkle root saved (size: " << merkleSize << ")." << endl;
 
         // Save nonce
         outFile.write(reinterpret_cast<const char*>(&currentBlock->nonce), sizeof(currentBlock->nonce));
-        cout << " Nonce saved: " << currentBlock->nonce << endl;
+        cout << "[DEBUG] Nonce saved: " << currentBlock->nonce << endl;
 
         // Save timestamp
         time_t timestamp = chrono::system_clock::to_time_t(currentBlock->timestamp);
         outFile.write(reinterpret_cast<const char*>(&timestamp), sizeof(timestamp));
-        cout << " Timestamp saved: " << timestamp << endl;
+        cout << "[DEBUG] Timestamp saved: " << timestamp << endl;
 
         // Save transactions
         size_t txCount = currentBlock->transactions.size();
         outFile.write(reinterpret_cast<const char*>(&txCount), sizeof(txCount));
-        cout << " Number of transactions: " << txCount << endl;
+        cout << "[DEBUG] Number of transactions: " << txCount << endl;
 
         for (const auto& tx : currentBlock->transactions) {
             // Save sender
             size_t senderSize = tx.get_sender().size();
             outFile.write(reinterpret_cast<const char*>(&senderSize), sizeof(senderSize));
             outFile.write(tx.get_sender().data(), senderSize);
-            cout << " Sender saved: " << tx.get_sender() << endl;
+            cout << "[DEBUG] Sender saved: " << tx.get_sender() << endl;
 
             // Save receiver
             size_t receiverSize = tx.get_receiver().size();
             outFile.write(reinterpret_cast<const char*>(&receiverSize), sizeof(receiverSize));
             outFile.write(tx.get_receiver().data(), receiverSize);
-            cout << " Receiver saved: " << tx.get_receiver() << endl;
+            cout << "[DEBUG] Receiver saved: " << tx.get_receiver() << endl;
 
             // Save amount
             double amount = tx.get_amount();
             outFile.write(reinterpret_cast<const char*>(&amount), sizeof(amount));
-            cout << " Amount saved: " << amount << endl;
+            cout << "[DEBUG] Amount saved: " << amount << endl;
         }
 
-        currentBlock = currentBlock->prevhash; // Move to the previous block
+    } catch (const exception& e) {
+        cerr << "[ERROR] Exception during saveToFile: " << e.what() << endl;
+        outFile.close();
+        return false;
     }
 
     outFile.close();
     cout << " saveToFile completed successfully." << endl;
     return true;
 }
+
+
 // bool Blockchain::loadFromFile(const string& filename) {
 //     cout << "[DEBUG] Starting loadFromFile function." << endl;
 
@@ -338,6 +502,7 @@ bool Blockchain::saveToFile(const string& filename) const {
 //         throw runtime_error("Unable to open file for loading blockchain.");
 //     }
 
+//     unordered_map<string, Block*> blockMap; // Map to store blocks by their hash
 //     vector<Block*> loadedBlocks;
 
 //     while (true) {
@@ -412,43 +577,30 @@ bool Blockchain::saveToFile(const string& filename) const {
 //             transactions.emplace_back(sender, receiver, amount);
 //         }
 
-//         // Reconstruct block
-//         Block* prevBlock = !loadedBlocks.empty() ? loadedBlocks.back() : nullptr;
-//         Block* newBlock = new Block(transactions, prevBlock, nonce, blockHash, chrono::system_clock::from_time_t(timestamp));
+//         // Create new block (temporary prevhash link is null)
+//         Block* newBlock = new Block(transactions, nullptr, nonce, blockHash, chrono::system_clock::from_time_t(timestamp));
 //         loadedBlocks.push_back(newBlock);
-//         cout << "[DEBUG] Block reconstructed and added to list." << endl;
+//         blockMap[blockHash] = newBlock; // Store in map for later linking
+//         cout << "[DEBUG] Block reconstructed and added to map." << endl;
+
+//         // Link prevhash if available
+//         if (hasPrevHash && blockMap.find(prevHash) != blockMap.end()) {
+//             newBlock->prevhash = blockMap[prevHash];
+//         }
 //     }
 
 //     inFile.close();
 
 //     // Rebuild the blockchain
-//     // if (!loadedBlocks.empty()) {
-//     //     cout << "[DEBUG] Rebuilding blockchain from loaded blocks." << endl;
-//     //     genesisBlock = loadedBlocks.back();
-//     //     latestBlock = loadedBlocks.front();
-//     //     chain.clear();
-//     //     for (auto block : loadedBlocks) {
-//     //         chain.push_back(*block);
-//     //     }
-//     // }
 //     if (!loadedBlocks.empty()) {
-//     cout << "[DEBUG] Rebuilding blockchain from loaded blocks." << endl;
+//         cout << "[DEBUG] Rebuilding blockchain from loaded blocks." << endl;
+//         genesisBlock = loadedBlocks.back();
+//         latestBlock = loadedBlocks.front();
+//         chain.clear();
 
-//     // Set genesisBlock and latestBlock
-//     genesisBlock = loadedBlocks.back();  // Last block read is genesis
-//     latestBlock = loadedBlocks.front(); // First block read is the latest
-
-//     chain.clear();
-
-//     // Add all blocks to the chain and relink prevhash pointers
-//     for (size_t i = 0; i < loadedBlocks.size(); ++i) {
-//         if (i > 0) {
-//             loadedBlocks[i]->prevhash = loadedBlocks[i - 1]; // Link to previous block
+//         for (auto block : loadedBlocks) {
+//             chain.push_back(*block);
 //         }
-//         chain.push_back(*loadedBlocks[i]); // Add block to the chain
-//     }
-
-//     cout << "[DEBUG] Blockchain successfully rebuilt with " << chain.size() << " blocks." << endl;
 //     }
 
 //     cout << "[DEBUG] loadFromFile completed successfully." << endl;
@@ -463,8 +615,7 @@ bool Blockchain::loadFromFile(const string& filename) {
         throw runtime_error("\033[31mUnable to open file for loading blockchain.\033[0m");
     }
 
-    unordered_map<string, Block*> blockMap; // Map to store blocks by their hash
-    vector<Block*> loadedBlocks;
+    chain.clear(); // Clear the existing chain if any
 
     while (true) {
         cout << " Reading block data." << endl;
@@ -474,7 +625,7 @@ bool Blockchain::loadFromFile(const string& filename) {
         if (!inFile.read(reinterpret_cast<char*>(&hashSize), sizeof(hashSize))) break;
         string blockHash(hashSize, '\0');
         inFile.read(&blockHash[0], hashSize);
-        cout << " Block hash read: " << blockHash << " (size: " << hashSize << ")" << endl;
+        cout << "[DEBUG] Block hash read: " << blockHash << " (size: " << hashSize << ")" << endl;
 
         // Read previous hash
         bool hasPrevHash;
@@ -485,9 +636,9 @@ bool Blockchain::loadFromFile(const string& filename) {
             inFile.read(reinterpret_cast<char*>(&prevHashSize), sizeof(prevHashSize));
             prevHash.resize(prevHashSize);
             inFile.read(&prevHash[0], prevHashSize);
-            cout << " Previous hash read: " << prevHash << " (size: " << prevHashSize << ")" << endl;
+            cout << "[DEBUG] Previous hash read: " << prevHash << " (size: " << prevHashSize << ")" << endl;
         } else {
-            cout << " \033[31mNo previous hash found.\033[0m" << endl;
+            cout << "[DEBUG] No previous hash found." << endl;
         }
 
         // Read Merkle root
@@ -495,45 +646,43 @@ bool Blockchain::loadFromFile(const string& filename) {
         inFile.read(reinterpret_cast<char*>(&merkleSize), sizeof(merkleSize));
         string merkleRoot(merkleSize, '\0');
         inFile.read(&merkleRoot[0], merkleSize);
-        cout << " Merkle root read: " << merkleRoot << " (size: " << merkleSize << ")" << endl;
+        cout << "[DEBUG] Merkle root read: " << merkleRoot << " (size: " << merkleSize << ")" << endl;
 
         // Read nonce
         int nonce;
         inFile.read(reinterpret_cast<char*>(&nonce), sizeof(nonce));
-        cout << " Nonce read: " << nonce << endl;
+        cout << "[DEBUG] Nonce read: " << nonce << endl;
 
         // Read timestamp
         time_t timestamp;
         inFile.read(reinterpret_cast<char*>(&timestamp), sizeof(timestamp));
-        cout << " Timestamp read: " << timestamp << endl;
+        cout << "[DEBUG] Timestamp read: " << timestamp << endl;
 
         // Read transactions
         size_t txCount;
         inFile.read(reinterpret_cast<char*>(&txCount), sizeof(txCount));
-        cout << " Number of transactions read: " << txCount << endl;
+        cout << "[DEBUG] Number of transactions read: " << txCount << endl;
 
         vector<Transaction> transactions;
         for (size_t i = 0; i < txCount; ++i) {
-            cout << " Reading transaction " << i + 1 << " of " << txCount << "." << endl;
+            cout << "[DEBUG] Reading transaction " << i + 1 << " of " << txCount << "." << endl;
 
             // Read sender
             size_t senderSize;
             inFile.read(reinterpret_cast<char*>(&senderSize), sizeof(senderSize));
             string sender(senderSize, '\0');
             inFile.read(&sender[0], senderSize);
-            cout << " Sender read: " << sender << endl;
+            cout << "[DEBUG] Sender read: " << sender << endl;
 
-            // Read receiver
             size_t receiverSize;
             inFile.read(reinterpret_cast<char*>(&receiverSize), sizeof(receiverSize));
             string receiver(receiverSize, '\0');
             inFile.read(&receiver[0], receiverSize);
-            cout << " Receiver read: " << receiver << endl;
+            cout << "[DEBUG] Receiver read: " << receiver << endl;
 
-            // Read amount
             double amount;
             inFile.read(reinterpret_cast<char*>(&amount), sizeof(amount));
-            cout << " Amount read: " << amount << endl;
+            cout << "[DEBUG] Amount read: " << amount << endl;
 
             transactions.emplace_back(sender, receiver, amount);
         }
@@ -542,7 +691,7 @@ bool Blockchain::loadFromFile(const string& filename) {
         Block* newBlock = new Block(transactions, nullptr, nonce, blockHash, chrono::system_clock::from_time_t(timestamp));
         loadedBlocks.push_back(newBlock);
         blockMap[blockHash] = newBlock; // Store in map for later linking
-        cout << " Block reconstructed and added to map." << endl;
+        cout << "[DEBUG] Block reconstructed and added to map." << endl;
 
         // Link prevhash if available
         if (hasPrevHash && blockMap.find(prevHash) != blockMap.end()) {
@@ -554,7 +703,7 @@ bool Blockchain::loadFromFile(const string& filename) {
 
     // Rebuild the blockchain
     if (!loadedBlocks.empty()) {
-        cout << " Rebuilding blockchain from loaded blocks." << endl;
+        cout << "[DEBUG] Rebuilding blockchain from loaded blocks." << endl;
         genesisBlock = loadedBlocks.back();
         latestBlock = loadedBlocks.front();
         chain.clear();

@@ -12,6 +12,7 @@ wabiha_zehra wabiha123?
 random_user ?user?90
 another_user ?lol?2020
 my_name ??123hello
+<<<<<<< HEAD
 simrah_farooque 123*hello
 anaya_khan anaya123$
 dani_zoe pakistan4%
@@ -26,3 +27,6 @@ fahad_mustafa fahad56??
 fizza_niazi fizza340?
 abiha_fatima fatima34*
 user_not_found found404?
+=======
+user_user ?user?12
+>>>>>>> 8293c0461aa6ade20d66e7ef5e1d4c486298c3ca
