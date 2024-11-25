@@ -118,50 +118,6 @@ void Wallet::setBalance(float newBalance)
     balance = newBalance;
 }
 
-// std::pair<unsigned long long, unsigned long long> Wallet::getPublicKey() const {
-//     return publicKey;  // Assuming publicKey is a member variable of Wallet
-// }
-// Save wallet data to binary file
-
-
-// Static method to load all wallets from a binary file into a vector
-// std::vector<Wallet*> Wallet::loadAllFromFile(const std::string& filename) {
-//     std::vector<Wallet*> wallets;
-//     std::ifstream inFile(filename, std::ios::binary);
-
-//     if (!inFile.is_open()) {
-//         throw std::runtime_error("Unable to open file for loading wallets.");
-//     }
-
-//     while (inFile.peek() != EOF) { // Continue until the end of the file
-//         size_t idLength;
-//         inFile.read(reinterpret_cast<char*>(&idLength), sizeof(idLength));
-        
-//         if (inFile.eof()) break; // Stop if the end of the file is reached
-        
-//         char* idBuffer = new char[idLength + 1];
-//         inFile.read(idBuffer, idLength);
-//         idBuffer[idLength] = '\0';
-
-//         std::string id(idBuffer);
-//         delete[] idBuffer;
-
-//         std::pair<long long, long long> pubKey, privKey;
-//         inFile.read(reinterpret_cast<char*>(&pubKey.first), sizeof(pubKey.first));
-//         inFile.read(reinterpret_cast<char*>(&pubKey.second), sizeof(pubKey.second));
-
-//         inFile.read(reinterpret_cast<char*>(&privKey.first), sizeof(privKey.first));
-//         inFile.read(reinterpret_cast<char*>(&privKey.second), sizeof(privKey.second));
-
-//         float balance;
-//         inFile.read(reinterpret_cast<char*>(&balance), sizeof(balance));
-
-//         wallets.push_back(new Wallet(id, pubKey, privKey, balance));
-//     }
-
-//     inFile.close();
-//     return wallets;
-// }
 std::vector<Wallet*> Wallet::loadAllFromFile(const std::string& filename) {
     std::vector<Wallet*> wallets;
     std::ifstream inFile(filename, std::ios::binary);
