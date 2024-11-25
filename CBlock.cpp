@@ -43,7 +43,7 @@ Block::Block(const std::vector<Transaction>& transactions, Block* prevBlock, int
           const std::string& blockHash, const std::chrono::system_clock::time_point& timestamp)
         : transactions(transactions), prevhash(prevBlock), nonce(nonce), blockHash(blockHash), timestamp(timestamp) {
         // No additional computation
-        std::cout << "Simplified Block constructor called." << std::endl;
+        std::cout << "\033[34mSimplified Block constructor called.\033[0m" << std::endl;
     }
 // Mining function to find a valid hash for the block based on the given difficulty
 std::string Block::mineBlock()
@@ -126,6 +126,8 @@ std::string Block::calculateMerkleRoot()
 {
     if (transactions.empty())
     {
+          cout << "\033[31mError: No transactions to calculate Merkle Root.\033[0m" << endl; // Red text
+       
         return ""; // Return empty string if no transactions
     }
 
