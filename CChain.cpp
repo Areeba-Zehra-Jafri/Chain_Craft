@@ -4,12 +4,12 @@
 #include <iostream>
 #include <chrono>
 #include <ctime>
-#include<iomanip>
-#include<queue>
-#include<string>
+#include <iomanip>
+#include <queue>
+#include <string>
 #include <fstream>
-#include<unordered_map>
-#include <sstream> // For serialization
+#include <unordered_map>
+#include <sstream>   // For serialization
 #include <stdexcept> // For exceptions
 
 using namespace std;
@@ -23,15 +23,15 @@ Blockchain::Blockchain()
 }
 
 // Create a transaction and add it to the list of pending transactions
-void Blockchain::createTransaction(Transaction transaction) {
+void Blockchain::createTransaction(Transaction transaction)
+{
     pendingTransactions.push(std::move(transaction)); // Add to the queue
 }
-
 
 // Mine pending transactions into a new block and add it to the blockchain
 void Blockchain::minePendingTransactions()
 {
-   // Check if there are pending transactions to mine
+    // Check if there are pending transactions to mine
     if (pendingTransactions.empty())
     {
         std::cout << "\033[31mNo pending transactions to mine.\033[0m" << std::endl;
@@ -39,15 +39,16 @@ void Blockchain::minePendingTransactions()
     }
     // Collect transactions from the queue to create a block
     std::vector<Transaction> transactionsForBlock;
-    while (!pendingTransactions.empty()) {
+    while (!pendingTransactions.empty())
+    {
         transactionsForBlock.push_back(pendingTransactions.front()); // Retrieve transaction
         pendingTransactions.pop();                                   // Remove it from the queue
     }
 
     // Create a new block with latestBlock as the previous block
-    Block* newBlock = new Block(transactionsForBlock, latestBlock, 2);
-    latestBlock = newBlock;            // Update the latest block to the newly mined block
-    chain.push_back(*newBlock);        // Add the mined block to the chain (optional)
+    Block *newBlock = new Block(transactionsForBlock, latestBlock, 2);
+    latestBlock = newBlock;     // Update the latest block to the newly mined block
+    chain.push_back(*newBlock); // Add the mined block to the chain (optional)
 
     std::cout << "Mined new block: " << newBlock->blockHash << std::endl;
 }
@@ -64,71 +65,118 @@ bool Blockchain::isTransactionValid(const Transaction &tx)
     return tx.get_amount() > 0;
 }
 
-bool Blockchain::isChainValid()
-{
-    // Iterate over the blocks in the chain starting from the second block (index 1)
-    for (size_t i = 1; i < chain.size(); ++i)
-    {
+// bool Blockchain::isChainValid()
+// {
+    // // Iterate over the blocks in the chain starting from the second block (index 1)
+    // for (size_t i = 1; i < chain.size(); ++i)
+    // {
+    //     Block *currentBlock = &chain[i];
+    //     Block *previousBlock = &chain[i - 1]; // Simply use the previous block in the vector
+
+    //     // Check if the current block's hash is valid
+    //     // if (!isBlockHashValid(*currentBlock))
+    //     // {
+    //     //     return false;
+    //     // }
+
+    //     // // Ensure the previous block's hash matches
+    //     // if (currentBlock->prevhash != nullptr && currentBlock->prevhash->blockHash != previousBlock->blockHash)
+    //     // {
+    //     //     return false;
+    //     // }
+    //     // if (currentBlock->blockHash != currentBlock->generateHash()) {
+    //     string calculateHash = currentBlock->generateHash();
+    //     if (currentBlock->blockHash != calculateHash)
+    //     {
+    //         cout << "\033[31mInvalid block hash at index\033[0m " << i << endl;
+    //         cout << "Expected: " << calculateHash << endl;
+    //         cout << "Found: " << currentBlock->blockHash << endl;
+    //         return false;
+    //     } // Ensure the previous block's hash matches
+
+    //     if (currentBlock->prevhash != nullptr && currentBlock->prevhash->blockHash != previousBlock->blockHash)
+    //     {
+    //         cout << "\033[31mInvalid previous hash at index\033[0m " << i << endl;
+    //         cout << "Expected: " << previousBlock->blockHash << endl;
+    //         cout << "Found: " << currentBlock->prevhash->blockHash << endl;
+
+    //         return false;
+    //     }
+
+    //     cout << "\033[33mChecking signature:\033[0m " << endl;
+    //     bool flag = true;
+    //     // Check the validity of each transaction in the current block
+    //     for (auto &tx : currentBlock->transactions)
+    //     {
+    //         RSA &publicKey = publicKeyMap[tx.get_sender()]; // Retrieve the sender's public key
+    //         if (!tx.isValid(publicKey))
+
+    //         { // Verify the transaction's signature
+    //             // return false;
+    //             flag = false;
+    //             break;
+    //         }
+    //     }
+    //     if (flag)
+    //     {
+    //         cout << "\033[34m--------------------------------------------------\033[0m\n";
+    //         cout << "\033[34mSignature Verified: Transaction is Valid\033[0m" << endl;
+    //         cout << "\033[34m--------------------------------------------------\033[0m\n";
+    //     }
+
+    //     else
+    //     {
+
+    //         cout << "\033[31m--------------------------------------------------\033[0m\n";
+    //         cout << "\033[31mSignature not valid \033[0m" << endl;
+    //         cout << "\033[31m--------------------------------------------------\033[0m\n";
+    //     }
+    //     return true;
+    // }
+//}
+bool Blockchain::isChainValid() {
+    for (size_t i = 1; i < chain.size(); ++i) {
         Block *currentBlock = &chain[i];
-        Block *previousBlock = &chain[i - 1]; // Simply use the previous block in the vector
+        Block *previousBlock = &chain[i - 1];
 
-        // Check if the current block's hash is valid
-        // if (!isBlockHashValid(*currentBlock))
-        // {
-        //     return false;
-        // }
-
-        // // Ensure the previous block's hash matches
-        // if (currentBlock->prevhash != nullptr && currentBlock->prevhash->blockHash != previousBlock->blockHash)
-        // {
-        //     return false;
-        // }
-        //if (currentBlock->blockHash != currentBlock->generateHash()) { 
-        string calculateHash = currentBlock->generateHash(); 
+        string calculateHash = currentBlock->generateHash();
         if (currentBlock->blockHash != calculateHash) {
-            cout << "\033[31mInvalid block hash at index\033[0m " << i << endl; 
-             cout << "Expected: " << calculateHash << endl; 
+            cout << "\033[31mInvalid block hash at index\033[0m " << i << endl;
+            cout << "Expected: " << calculateHash << endl;
             cout << "Found: " << currentBlock->blockHash << endl;
-            return false; } // Ensure the previous block's hash matches 
+            return false;
+        }
 
-        if (currentBlock->prevhash != nullptr && currentBlock->prevhash->blockHash != previousBlock->blockHash) { 
-            cout << "\033[31mInvalid previous hash at index\033[0m " << i << endl; 
-             cout << "Expected: " << previousBlock->blockHash << endl;
-             cout << "Found: " << currentBlock->prevhash->blockHash << endl;
-              
-            return false; }
+        if (currentBlock->prevhash != nullptr && currentBlock->prevhash->blockHash != previousBlock->blockHash) {
+            cout << "\033[31mInvalid previous hash at index\033[0m " << i << endl;
+            cout << "Expected: " << previousBlock->blockHash << endl;
+            cout << "Found: " << currentBlock->prevhash->blockHash << endl;
+            return false;
+        }
 
-        cout<<"\033[33mChecking signature:\033[0m "<<endl;
-        bool flag=true;
-        // Check the validity of each transaction in the current block
-        for (auto &tx : currentBlock->transactions)
-        {
-            RSA &publicKey = publicKeyMap[tx.get_sender()]; // Retrieve the sender's public key
-            if (!tx.isValid(publicKey))
-
-            { // Verify the transaction's signature
-                //return false;
-                flag=false;
+        bool flag = true;
+        for (auto &tx : currentBlock->transactions) {
+            RSA &publicKey = publicKeyMap[tx.get_sender()];
+            if (!tx.isValid(publicKey)) {
+                cout << "\033[31mInvalid transaction detected\033[0m" << endl;
+                flag = false;
                 break;
             }
         }
-        if(flag){
-    cout << "\033[34m--------------------------------------------------\033[0m\n";
-    cout << "\033[34mSignature Verified: Transaction is Valid\033[0m" << endl;
-    cout << "\033[34m--------------------------------------------------\033[0m\n";
+
+        if (flag) {
+            cout << "\033[34m--------------------------------------------------\033[0m\n";
+            cout << "\033[34mSignature Verified: Transaction is Valid\033[0m" << endl;
+            cout << "\033[34m--------------------------------------------------\033[0m\n";
+        } else {
+            cout << "\033[31m--------------------------------------------------\033[0m\n";
+            cout << "\033[31mSignature not valid \033[0m" << endl;
+            cout << "\033[31m--------------------------------------------------\033[0m\n";
         }
-
-        else{
-
-         cout << "\033[31m--------------------------------------------------\033[0m\n";
-        cout<<"\033[31mSignature not valid \033[0m"<<endl;
-        cout << "\033[31m--------------------------------------------------\033[0m\n";
-
-       
     }
-    return true;
-    }
+    return true; // Return true only if all blocks are valid
 }
+
 
 // Calculate the Merkle Root of the entire blockchain
 std::string Blockchain::calculateBlockchainMerkleRoot()
@@ -171,12 +219,12 @@ std::string Blockchain::calculateBlockchainMerkleRoot()
     return blockHashes[0];
 }
 
-//new one
+// new one
 void Blockchain::printChain()
 {
     Block *currentBlock = latestBlock; // Start from the genesis block
     std::cout << "\033[33mPrinting Blockchain...\033[0m\n";
-    
+
     while (currentBlock != nullptr)
     {
         // Convert timestamp to system time (thread-safe)
@@ -202,8 +250,8 @@ void Blockchain::printChain()
         std::cout << "Block Hash: " << currentBlock->blockHash << std::endl;
 
         // Print Merkle Root of the current block
-       // std::cout << "Merkle Root of block: " << currentBlock->getMerkleRoot() << std::endl;
-         string merkleRoot = currentBlock->getMerkleRoot();
+        // std::cout << "Merkle Root of block: " << currentBlock->getMerkleRoot() << std::endl;
+        string merkleRoot = currentBlock->getMerkleRoot();
         if (!merkleRoot.empty())
         {
             std::cout << "Merkle Root of block: " << merkleRoot << std::endl;
@@ -217,7 +265,7 @@ void Blockchain::printChain()
         std::cout << "Merkle Root of Blockchain: " << calculateBlockchainMerkleRoot() << std::endl;
 
         std::cout << "Transactions:" << std::endl;
-        
+
         // Loop through the transactions in the current block
         for (const auto &tx : currentBlock->transactions)
         {
@@ -231,19 +279,20 @@ void Blockchain::printChain()
         // Move to the previous block in the chain
         currentBlock = currentBlock->prevhash ? currentBlock->prevhash : nullptr;
     }
-    if(isChainValid()){
-        cout<< "\033[34m--------------------------------------------------\033[0m\n";
-        cout<<"\033[34mBlockChain is Valid:\033[0m "<<endl;
-         cout << "\033[34m--------------------------------------------------\033[0m\n";
+    if (isChainValid())
+    {
+        cout << "\033[34m--------------------------------------------------\033[0m\n";
+        cout << "\033[34mBlockChain is Valid:\033[0m " << endl;
+        cout << "\033[34m--------------------------------------------------\033[0m\n";
     }
 
-    else {
-     cout << "\033[31m--------------------------------------------------\033[0m\n";
-        cout<<"\033[31mBlockChain is not valid\033[0m "<<endl;
-     cout << "\033[31m--------------------------------------------------\033[0m\n";
+    else
+    {
+        cout << "\033[31m--------------------------------------------------\033[0m\n";
+        cout << "\033[31mBlockChain is not valid\033[0m " << endl;
+        cout << "\033[31m--------------------------------------------------\033[0m\n";
     }
 }
-
 
 // Notify wallets with updated transactions and balances
 void Blockchain::notifyWallets(std::vector<Wallet *> &wallets)
