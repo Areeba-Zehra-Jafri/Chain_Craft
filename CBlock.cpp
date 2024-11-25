@@ -125,9 +125,7 @@ struct MerkleNode
 std::string Block::calculateMerkleRoot()
 {
     if (transactions.empty())
-    {
-          cout << "\033[31mError: No transactions to calculate Merkle Root.\033[0m" << endl; // Red text
-       
+    {  
         return ""; // Return empty string if no transactions
     }
 

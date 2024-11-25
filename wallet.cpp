@@ -7,14 +7,14 @@
 #include<random>
 #include <fstream>
 // Constructor to initialize a Wallet with a given ID
-Wallet::Wallet(const std::string &id) : id(id), balance(0.0f)
+Wallet::Wallet(const std::string &id,const std::string &pass) : id(id),password(pass), balance(0.0f)
 {
     generateKeys(); // Generate RSA keys upon wallet creation
 }
 
-Wallet::Wallet(const std::string &id, const std::pair<long long, long long> &pubKey,
+Wallet::Wallet(const std::string &id,const std::string &pass, const std::pair<long long, long long> &pubKey,
                const std::pair<long long, long long> &privKey, float initialBalance)
-    : id(id), publicKey(pubKey), privateKey(privKey), balance(initialBalance) {}
+    : id(id),password(pass), publicKey(pubKey), privateKey(privKey), balance(initialBalance) {}
     // No key generation here
 
 // Destructor
@@ -103,6 +103,11 @@ std::string Wallet::getId() const
     return id;
 }
 
+std::string Wallet::getPassword() const
+{
+    return password;
+}
+
 // Getter for Wallet balance
 float Wallet::getBalance() const
 {
@@ -117,45 +122,46 @@ void Wallet::setBalance(float newBalance)
 //     return publicKey;  // Assuming publicKey is a member variable of Wallet
 // }
 // Save wallet data to binary file
-void Wallet::saveToFile(std::ofstream &outFile) const {
-    size_t idLength = id.size();
-    outFile.write(reinterpret_cast<const char*>(&idLength), sizeof(idLength));
-    outFile.write(id.c_str(), idLength);
-    
-    outFile.write(reinterpret_cast<const char*>(&publicKey.first), sizeof(publicKey.first));
-    outFile.write(reinterpret_cast<const char*>(&publicKey.second), sizeof(publicKey.second));
-    
-    outFile.write(reinterpret_cast<const char*>(&privateKey.first), sizeof(privateKey.first));
-    outFile.write(reinterpret_cast<const char*>(&privateKey.second), sizeof(privateKey.second));
-    
-    outFile.write(reinterpret_cast<const char*>(&balance), sizeof(balance));
-}
 
-// Static method to load wallet from binary file
-Wallet* Wallet::loadFromFile(std::ifstream &inFile) {
-    size_t idLength;
-    inFile.read(reinterpret_cast<char*>(&idLength), sizeof(idLength));
-    
-    char* idBuffer = new char[idLength + 1];
-    inFile.read(idBuffer, idLength);
-    idBuffer[idLength] = '\0';
-    
-    std::string id(idBuffer);
-    delete[] idBuffer;
-    
-    std::pair<long long, long long> pubKey, privKey;
-    inFile.read(reinterpret_cast<char*>(&pubKey.first), sizeof(pubKey.first));
-    inFile.read(reinterpret_cast<char*>(&pubKey.second), sizeof(pubKey.second));
-    
-    inFile.read(reinterpret_cast<char*>(&privKey.first), sizeof(privKey.first));
-    inFile.read(reinterpret_cast<char*>(&privKey.second), sizeof(privKey.second));
-    
-    float balance;
-    inFile.read(reinterpret_cast<char*>(&balance), sizeof(balance));
-    
-    return new Wallet(id, pubKey, privKey, balance);
-}
+
 // Static method to load all wallets from a binary file into a vector
+// std::vector<Wallet*> Wallet::loadAllFromFile(const std::string& filename) {
+//     std::vector<Wallet*> wallets;
+//     std::ifstream inFile(filename, std::ios::binary);
+
+//     if (!inFile.is_open()) {
+//         throw std::runtime_error("Unable to open file for loading wallets.");
+//     }
+
+//     while (inFile.peek() != EOF) { // Continue until the end of the file
+//         size_t idLength;
+//         inFile.read(reinterpret_cast<char*>(&idLength), sizeof(idLength));
+        
+//         if (inFile.eof()) break; // Stop if the end of the file is reached
+        
+//         char* idBuffer = new char[idLength + 1];
+//         inFile.read(idBuffer, idLength);
+//         idBuffer[idLength] = '\0';
+
+//         std::string id(idBuffer);
+//         delete[] idBuffer;
+
+//         std::pair<long long, long long> pubKey, privKey;
+//         inFile.read(reinterpret_cast<char*>(&pubKey.first), sizeof(pubKey.first));
+//         inFile.read(reinterpret_cast<char*>(&pubKey.second), sizeof(pubKey.second));
+
+//         inFile.read(reinterpret_cast<char*>(&privKey.first), sizeof(privKey.first));
+//         inFile.read(reinterpret_cast<char*>(&privKey.second), sizeof(privKey.second));
+
+//         float balance;
+//         inFile.read(reinterpret_cast<char*>(&balance), sizeof(balance));
+
+//         wallets.push_back(new Wallet(id, pubKey, privKey, balance));
+//     }
+
+//     inFile.close();
+//     return wallets;
+// }
 std::vector<Wallet*> Wallet::loadAllFromFile(const std::string& filename) {
     std::vector<Wallet*> wallets;
     std::ifstream inFile(filename, std::ios::binary);
@@ -167,32 +173,45 @@ std::vector<Wallet*> Wallet::loadAllFromFile(const std::string& filename) {
     while (inFile.peek() != EOF) { // Continue until the end of the file
         size_t idLength;
         inFile.read(reinterpret_cast<char*>(&idLength), sizeof(idLength));
-        
+
         if (inFile.eof()) break; // Stop if the end of the file is reached
-        
+
+        // Read ID
         char* idBuffer = new char[idLength + 1];
         inFile.read(idBuffer, idLength);
         idBuffer[idLength] = '\0';
-
         std::string id(idBuffer);
         delete[] idBuffer;
 
+        // Read password
+        size_t passwordLength;
+        inFile.read(reinterpret_cast<char*>(&passwordLength), sizeof(passwordLength));
+
+        char* passwordBuffer = new char[passwordLength + 1];
+        inFile.read(passwordBuffer, passwordLength);
+        passwordBuffer[passwordLength] = '\0';
+        std::string password(passwordBuffer);
+        delete[] passwordBuffer;
+
+        // Read public and private keys
         std::pair<long long, long long> pubKey, privKey;
         inFile.read(reinterpret_cast<char*>(&pubKey.first), sizeof(pubKey.first));
         inFile.read(reinterpret_cast<char*>(&pubKey.second), sizeof(pubKey.second));
-
         inFile.read(reinterpret_cast<char*>(&privKey.first), sizeof(privKey.first));
         inFile.read(reinterpret_cast<char*>(&privKey.second), sizeof(privKey.second));
 
+        // Read balance
         float balance;
         inFile.read(reinterpret_cast<char*>(&balance), sizeof(balance));
 
-        wallets.push_back(new Wallet(id, pubKey, privKey, balance));
+        // Create Wallet object and add to the vector
+        wallets.push_back(new Wallet(id, password, pubKey, privKey, balance));
     }
 
     inFile.close();
     return wallets;
 }
+
 // Static method to save all wallets from a vector to a binary file
 void Wallet::saveAllToFile(const std::vector<Wallet*>& wallets, const std::string& filename) {
     std::ofstream outFile(filename, std::ios::binary);
@@ -206,6 +225,10 @@ void Wallet::saveAllToFile(const std::vector<Wallet*>& wallets, const std::strin
         size_t idLength = wallet->id.size();
         outFile.write(reinterpret_cast<const char*>(&idLength), sizeof(idLength));
         outFile.write(wallet->id.c_str(), idLength);
+
+        size_t passwordLength = wallet->password.size();
+        outFile.write(reinterpret_cast<const char*>(&passwordLength), sizeof(passwordLength));
+        outFile.write(wallet->password.c_str(), passwordLength);
 
         // Write public key
         outFile.write(reinterpret_cast<const char*>(&wallet->publicKey.first), sizeof(wallet->publicKey.first));
