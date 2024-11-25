@@ -66,41 +66,41 @@ Wallet* loginOrSignup(vector<Wallet*>& wallets, const string& walletsFile) {
         cin.ignore();
         
         if (choice == 1) { // Login
-            cout<<"------------------------";
-            cout << "Enter username: ";
+            cout<<"------------------------\n";
+            cout << "\nEnter username: ";
             string username;
             getline(cin, username);
-            cout<<"------------------------";
-            cout << "Enter password: ";
+            cout<<"------------------------\n";
+            cout << "\nEnter password: ";
             string password = inputPassword();
-            cout<<"------------------------";
+            cout<<"------------------------\n";
 
             for (auto wallet : wallets) {
                 if (wallet->getId() == username && wallet->getPassword() == password) {
-                    cout<<"--------------------------------------";
-                    cout << "\033[34mLogin successful!\n\033[0m";
-                    cout<<"---------------------------------------";
+                    cout<<"--------------------------------------\n";
+                    cout << "\033[34mLogin successful!\033[0m\n";
+                    cout<<"---------------------------------------\n";
                     return wallet;
                 }
             }
-            cout << "\033[31mInvalid username or password. Try again.\n\033[0m";
+            cout << "\033[31mInvalid username or password. Try again.\033[0m\n";
         } else if (choice == 2) { // Signup
-        cout<<"------------------------";
-            cout << "Enter username: ";
+        cout<<"--------------------------\n";
+            cout << "\nEnter username: ";
             string username;
             getline(cin, username);
             string password = inputPassword();
-            cout<<"------------------------";
+            cout<<"------------------------\n";
 
             Wallet* newWallet = new Wallet(username, password);
             newWallet->setBalance(100); // Default initial balance
             wallets.push_back(newWallet);
             cout << "\033[34m--------------------------------------------------\033[0m\n";
-            cout << "\033[34mSignup successful! Welcome, " << username << ".\n\033[0m";
+            cout << "\033[34mSignup successful! Welcome, " << username << ".\033[0m\n";
             cout << "\033[34m--------------------------------------------------\033[0m\n";
             return newWallet;
         } else {
-            cout << "\033[31mInvalid option. Try again.\n\033[0m";
+            cout << "\033[31mInvalid option. Try again.\033[0m\n";
         }
     }
 }
@@ -114,15 +114,15 @@ void blockchainMenu(Wallet* user, Blockchain& myBlockchain, vector<Wallet*>& wal
         cin.ignore();
 
         if (choice == 1) { // Perform a transaction
-           cout<<"----------------------------------";
-            cout << "Enter Username of receiver: ";
+           cout<<"-----------------------------------\n";
+            cout << "\nEnter Username of receiver: ";
             string receiver;
             getline(cin, receiver);
-             cout<<"----------------------------------";
-             cout << "Enter amount: ";
+             cout<<"----------------------------------\n";
+             cout << "\nEnter amount: ";
              int amount;
              cin >> amount;
-             cout<<"----------------------------------";
+             cout<<"----------------------------------\n";
             cin.ignore();
 
             Wallet* receiverWallet = nullptr;
@@ -137,16 +137,16 @@ void blockchainMenu(Wallet* user, Blockchain& myBlockchain, vector<Wallet*>& wal
                 Transaction tx = user->sendFunds(*receiverWallet, amount);
                 myBlockchain.createTransaction(tx);
                 cout << "\033[34m--------------------------------------------------\033[0m\n";
-                cout << "\033[34mTransaction added to the pending transactions.\n\033[0m";
+                cout << "\033[34mTransaction added to the pending transactions.\033[0m\n";
                 cout << "\033[34m--------------------------------------------------\033[0m\n";
             } else {
                 cout << "\033[31mReceiver not found.\n\033[0m";
             }
         } else if (choice == 2) { // Mine a block
-            cout << "\033[33mMining..........\n\033[0m";
+            cout << "\033[33mMining..........\033[0m\n";
             myBlockchain.minePendingTransactions();
             cout << "\033[34m--------------------------------------------------\033[0m\n";
-            cout << "\033[34mMining successful!\n\033[0m";
+            cout << "\033[34mMining successful!\033[0m\n";
             cout << "\033[34m--------------------------------------------------\033[0m\n";
             myBlockchain.notifyWallets(wallets);
         } else if (choice == 3) { // Print blockchain
@@ -154,11 +154,11 @@ void blockchainMenu(Wallet* user, Blockchain& myBlockchain, vector<Wallet*>& wal
         } else if (choice == 4) { // Logout
             user->saveAllToFile(wallets, walletsFile);
             cout << "\033[34m--------------------------------------------------\033[0m\n";
-            cout << "\033[34mLogged out successfully.\n\033[0m";
+            cout << "\033[34mLogged out successfully.\033[0m\n";
             cout << "\033[34m--------------------------------------------------\033[0m\n";
             break;
         } else {
-            cout << "\033[31mInvalid option. Try again.\n\033[0m";
+            cout << "\033[31mInvalid option. Try again.\033[0m\n";
         }
     }
 }
@@ -182,10 +182,10 @@ int main() {
             Wallet* user = loginOrSignup(wallets, walletsFile);
             blockchainMenu(user, myBlockchain, wallets, walletsFile);
         } else if (option == 'E' || option == 'e') {
-            cout << "\033[33mExiting ChainCraft. Goodbye!\n\033[0m";
+            cout << "\033[33mExiting ChainCraft. Goodbye!\033[0m\n";
             break;
         } else {
-            cout << "\033[31mInvalid option. Try again.\n\033[0m";
+            cout << "\033[31mInvalid option. Try again.\033[0m\n";
         }
     }
 

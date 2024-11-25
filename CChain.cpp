@@ -112,11 +112,13 @@ bool Blockchain::isChainValid()
                 break;
             }
         }
-        if(flag)
+        if(flag){
     cout << "\033[34m--------------------------------------------------\033[0m\n";
     cout << "\033[34mSignature Verified: Transaction is Valid\033[0m" << endl;
     cout << "\033[34m--------------------------------------------------\033[0m\n";
-        else
+        }
+
+        else{
 
          cout << "\033[31m--------------------------------------------------\033[0m\n";
         cout<<"\033[31mSignature not valid \033[0m"<<endl;
@@ -125,6 +127,7 @@ bool Blockchain::isChainValid()
        
     }
     return true;
+    }
 }
 
 // Calculate the Merkle Root of the entire blockchain
@@ -187,6 +190,7 @@ void Blockchain::printChain()
             std::cout << "Block Timestamp: " << std::put_time(tm_info, "%Y-%m-%d %H:%M:%S") << std::endl;
         }
         else
+
         {
             std::cout << "\033[31mBlock Timestamp: Invalid Timestamp\033[0m" << std::endl;
         }
@@ -227,14 +231,16 @@ string merkleRoot = currentBlock->getMerkleRoot();
         // Move to the previous block in the chain
         currentBlock = currentBlock->prevhash ? currentBlock->prevhash : nullptr;
     }
-    if(isChainValid())
+    if(isChainValid()){
         cout<< "\033[34m--------------------------------------------------\033[0m\n";
         cout<<"\033[34mBlockChain is Valid:\033[0m "<<endl;
          cout << "\033[34m--------------------------------------------------\033[0m\n";
-    else 
+}
+    else {
      cout << "\033[31m--------------------------------------------------\033[0m\n";
         cout<<"\033[31mBlockChain is not valid\033[0m "<<endl;
      cout << "\033[31m--------------------------------------------------\033[0m\n";
+    }
 }
 
 
