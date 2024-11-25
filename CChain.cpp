@@ -203,14 +203,14 @@ void Blockchain::printChain()
 
         // Print Merkle Root of the current block
        // std::cout << "Merkle Root of block: " << currentBlock->getMerkleRoot() << std::endl;
-string merkleRoot = currentBlock->getMerkleRoot();
+         string merkleRoot = currentBlock->getMerkleRoot();
         if (!merkleRoot.empty())
         {
             std::cout << "Merkle Root of block: " << merkleRoot << std::endl;
         }
         else
         {
-            std::cout << "\033[31mMerkle Root of block: No transactions in this block\033[0m\n";
+            std::cout << "Merkle Root of block: No transactions in this block\n";
         }
 
         // Print Merkle Root of the entire blockchain
@@ -235,7 +235,8 @@ string merkleRoot = currentBlock->getMerkleRoot();
         cout<< "\033[34m--------------------------------------------------\033[0m\n";
         cout<<"\033[34mBlockChain is Valid:\033[0m "<<endl;
          cout << "\033[34m--------------------------------------------------\033[0m\n";
-}
+    }
+
     else {
      cout << "\033[31m--------------------------------------------------\033[0m\n";
         cout<<"\033[31mBlockChain is not valid\033[0m "<<endl;

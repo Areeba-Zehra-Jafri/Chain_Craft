@@ -38,9 +38,6 @@ Block::Block(std::vector<Transaction> transactions, Block *previoushash, int dif
     this->nonce = 0;
     this->blockHash = mineBlock(); // Compute the block's hash
 
-     cout << "\033[34m--------------------------------------------------\033[0m\n";
-    cout << "\033[34mBlock successfully created with hash:\033[0m " << this->blockHash << "\n";
-    cout << "\033[34m--------------------------------------------------\033[0m\n";
 }
 
 Block::Block(const std::vector<Transaction>& transactions, Block* prevBlock, int nonce, 
@@ -132,9 +129,7 @@ std::string Block::calculateMerkleRoot()
 {
     if (transactions.empty())
     {  
-          cout << "\033[31m--------------------------------------------------\033[0m\n";
-        cout << "\033[31mError: No transactions in the block.\033[0m\n";
-        cout << "\033[31m--------------------------------------------------\033[0m\n";
+        cout << " No transactions in the block.\n";
         return ""; // Return empty string if no transactions
     }
 
