@@ -116,13 +116,6 @@ void RSA::generateKeys()
         throw std::runtime_error("Modular inverse calculation failed.");
     }
 
-    // Print generated values for verification
-    std::cout << "Generated keys:\n";
-    std::cout << "p: " << p << ", q: " << q << "\n";
-    std::cout << "n (modulus): " << n << ", phi: " << phi << "\n";
-    std::cout << "e (public key exponent): " << e << "\n";
-    std::cout << "d (private key exponent): " << d << "\n";
-
     setPrivateKey(d, n);
     set_PublicKey(e, n);
 }
