@@ -113,7 +113,7 @@ void RSA::generateKeys()
     d = modInverse(e, phi);
     if (d == 0)
     {
-        throw std::runtime_error("\033[31mModular inverse calculation failed.\033[0m");
+        throw std::runtime_error("\033[31mModular inverse calculation failed.\033[0m\n");
     }
 
     setPrivateKey(d, n);

@@ -125,7 +125,7 @@ std::vector<Wallet*> Wallet::loadAllFromFile(const std::string& filename) {
     std::ifstream inFile(filename, std::ios::binary);
 
     if (!inFile.is_open()) {
-        throw std::runtime_error("\033[31mUnable to open file for loading wallets.\033[0m");
+        throw std::runtime_error("\033[31mUnable to open file for loading wallets.\033[0m\n");
     }
 
     while (inFile.peek() != EOF) { // Continue until the end of the file
@@ -175,7 +175,7 @@ void Wallet::saveAllToFile(const std::vector<Wallet*>& wallets, const std::strin
     std::ofstream outFile(filename, std::ios::binary);
 
     if (!outFile.is_open()) {
-        throw std::runtime_error("\033[31mUnable to open file for saving wallets.\033[0m");
+        throw std::runtime_error("\033[31mUnable to open file for saving wallets.\033[0m\n");
     }
 
     for (const Wallet* wallet : wallets) {
